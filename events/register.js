@@ -1,17 +1,17 @@
-import eventHandler from './handler'
+import evenrRun from './run'
 
 const EVENTS = [
 	'input',
 	// 'keyup',
 	// 'keydown',
-	// 'mouseup',
 	// 'dblclick',
-	// 'mousedown',
+	'mouseup',
+	'mousedown',
 ]
 
 export default ctx => {
 	const { node } = ctx
-		,	listener = eventHandler.bind(ctx)
+		,	listener = evenrRun.bind(ctx)
 
 	for (const event of EVENTS) {
 		node.addEventListener(event, listener)
