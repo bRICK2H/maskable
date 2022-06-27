@@ -4,6 +4,7 @@
  * 2. date __.__.____ (8)
  * 3. time __:__ (4)
  */
+import eventRegister from './events/register'
 
 export default class Maskable {
 	constructor (options = {}) {
@@ -11,6 +12,10 @@ export default class Maskable {
 		this.char = '_'
 		this.type = null
 		this.node = null
+		this.pos = {
+			min: 0,
+			max: 0
+		}
 
 		this.init(options)
 	}
@@ -30,6 +35,7 @@ export default class Maskable {
 
 		setTimeout(() => {
 			this.node = this.getInputNode(el)
+			console.log(mask)
 	
 			if (!this.node) {
 				console.warn('[Maskable]: Элемент узла не найден.')
@@ -68,14 +74,12 @@ export default class Maskable {
 			console.warn('[Maskable]: Не указан тип маски.')
 		} else {
 			this.char = this.getChar(char)
-			console.warn('char', this.char)
 			this.mask = this.getMask({ mask, char: this.char })
-			console.warn('mask', this.mask)
+			this.pos.min = this.mask.indexOf(this.char)
+			this.pos.max = this.mask.lastIndexOf(this.char)
+			this.node.value = mask
 
-			console.log(this.node, this.node.value)
-
-			// this.node.value = this.mask
-			this.node.value = char
+			eventRegister(this)
 		}
 	}
 
@@ -108,7 +112,7 @@ export default class Maskable {
 
 				return acc
 			}, {})
-		const max = Math.max(
+		const maxLen = Math.max(
 			...Object
 				.entries(symbols)
 				.map(([_, arr]) => arr.length)
@@ -116,7 +120,7 @@ export default class Maskable {
 		const charSymbol = Object
 			.entries(symbols)
 			.reduce((acc, [char, arr]) => {
-				if (arr.length === max) {
+				if (arr.length === maxLen) {
 					acc = char
 				}
 
@@ -125,7 +129,7 @@ export default class Maskable {
 		const isExistChar = charSymbol === char
 		const pattern = new RegExp(`${charSymbol}`, 'g')
 
-		// Определить тип маски
+		// Определить тип маски (пока что напишу общие действия для всего)
 
 		return isExistChar
 			? mask
