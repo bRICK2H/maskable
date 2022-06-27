@@ -1,4 +1,4 @@
-import evenrRun from './run'
+import runEvents from './run'
 
 const EVENTS = [
 	'input',
@@ -11,7 +11,7 @@ const EVENTS = [
 
 export default ctx => {
 	const { node } = ctx
-		,	listener = evenrRun.bind(ctx)
+		,	listener = runEvents.bind(ctx)
 
 	for (const event of EVENTS) {
 		node.addEventListener(event, listener)

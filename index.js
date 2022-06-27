@@ -4,7 +4,7 @@
  * 2. date __.__.____ (8)
  * 3. time __:__ (4)
  */
-import eventRegister from './events/register'
+import eventRegister from './event/register'
 
 export default class Maskable {
 	constructor (options = {}) {
@@ -25,7 +25,6 @@ export default class Maskable {
 	 * @param { Object } options 
 	 */
 	init(options) {
-		console.log('init')
 		const {
 			el = null,
 			mask = '',
