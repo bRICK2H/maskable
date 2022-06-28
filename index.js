@@ -10,6 +10,7 @@ export default class Maskable {
 	constructor (options = {}) {
 		this.mask = ''
 		this.char = '_'
+		this.value = ''
 		this.type = null
 		this.node = null
 		this.pos = {
@@ -40,13 +41,6 @@ export default class Maskable {
 				console.warn('[Maskable]: Элемент узла не найден.')
 			} else {
 				this.initMask({ mask, char })
-	
-				/**
-				 * 1. Определение маски
-				 * 2. Если маска указана:
-				 * 	Определенить тип маски
-				 * 	Определить символы маски в зависимости от свойства char
-				 */
 			}
 		})
 	}
@@ -74,10 +68,13 @@ export default class Maskable {
 		} else {
 			this.char = this.getChar(char)
 			this.mask = this.getMask({ mask, char: this.char })
+			this.type = this.getType()
 			this.pos.min = this.mask.indexOf(this.char)
 			this.pos.max = this.mask.lastIndexOf(this.char)
-			this.node.value = mask
 
+			this.setValue(this.node.value)
+
+			// Регистрация собитий
 			eventRegister(this)
 		}
 	}
@@ -128,10 +125,67 @@ export default class Maskable {
 		const isExistChar = charSymbol === char
 		const pattern = new RegExp(`${charSymbol}`, 'g')
 
-		// Определить тип маски (пока что напишу общие действия для всего)
-
 		return isExistChar
 			? mask
 			: mask.replace(pattern, char)
+	}
+
+	/**
+	 * Определить/получить тип маски
+	 * @returns Number
+	 */
+
+	getType() {
+		const {
+			mask, char
+		} = this
+
+		return mask
+			.split('')
+			.filter(el => el === char)
+			.length
+	}
+
+	/**
+	 * Установить новое значение для input
+	 * @param { String } value 
+	 */
+
+	setValue(value) {
+		const { 
+			type, mask, char, node,
+		} = this
+
+		switch (type) {
+			// Phone
+			case 10: {
+				value = value
+					.replace(/\+7/, '')
+					.replace(/\D/g, '')
+
+				if (value.length === 11) {
+					value = value.slice(1)
+				}
+			}
+				break
+		}
+
+		value = value.split('')
+
+		const finallyValue = mask
+			.split('')
+			.map(el => {
+				if (el === char) {
+					return value.length
+						? value.splice(0, 1)
+						: char
+				}
+
+				return el
+			})
+			.join('')
+
+		node.value = finallyValue
+		
 	}
 }

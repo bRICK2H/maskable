@@ -5,4 +5,5 @@ export const input = function (e, h) {
 		} = this
 
 	console.error('input', e, this, h)
+	this.setValue(target.value)
 }

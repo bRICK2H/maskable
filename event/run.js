@@ -1,4 +1,4 @@
-import h from './helpers'
+import h from '../helpers'
 
 export default function (e) {
 	const { type } = e
