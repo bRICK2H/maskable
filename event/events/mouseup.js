@@ -4,5 +4,9 @@ export const mouseup = function (e, h) {
 			pos: { min, max }
 		} = this
 
-	console.error('mouseup', e, this, h)
+	// console.error('mouseup', e, this, h)
+	if (!h.isFullValue(this)) {
+		const [start, end] = h.findFirstEmpty(this)
+		target.setSelectionRange(start, end)
+	}
 }

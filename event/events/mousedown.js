@@ -3,6 +3,7 @@ export const mousedown = function(e, h) {
 		, {
 			pos: { min, max }
 		} = this
+		
 
-	console.error('mousedown', e, this, h)
+	// console.error('mousedown', e, this, h)
 }

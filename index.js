@@ -163,8 +163,9 @@ export default class Maskable {
 					.replace(/\+7/, '')
 					.replace(/\D/g, '')
 
-				if (value.length === 11) {
-					value = value.slice(1)
+				if (value.length >= 11) {
+					console.log('here?')
+					value = value.slice(0, -1)
 				}
 			}
 				break
@@ -185,7 +186,7 @@ export default class Maskable {
 			})
 			.join('')
 
-		node.value = finallyValue
+		node.value = this.value = finallyValue
 		
 	}
 }
