@@ -17,10 +17,17 @@ export default class Maskable {
 			min: 0,
 			max: 0
 		}
+		this.codes = {
+			backspace: false,
+		}
 
 		this.init(options)
 	}
-	
+
+	get _value() {
+		return this.value
+	}
+
 	/**
 	 * Инициализация плагина
 	 * @param { Object } options 
@@ -30,19 +37,17 @@ export default class Maskable {
 			el = null,
 			mask = '',
 			char = '_',
-			moving = false,
 		} = options
 
-		setTimeout(() => {
+		// setTimeout(() => {
 			this.node = this.getInputNode(el)
-			console.log(mask)
 	
 			if (!this.node) {
 				console.warn('[Maskable]: Элемент узла не найден.')
 			} else {
 				this.initMask({ mask, char })
 			}
-		})
+		// })
 	}
 
 	/**
@@ -52,7 +57,7 @@ export default class Maskable {
 	 */
 
 	getInputNode(el) {
-		return document.querySelector(el)
+		return el instanceof Node ? el : document.querySelector(el)
 	}
 
 	/**
@@ -70,7 +75,7 @@ export default class Maskable {
 			this.mask = this.getMask({ mask, char: this.char })
 			this.type = this.getType()
 			this.pos.min = this.mask.indexOf(this.char)
-			this.pos.max = this.mask.lastIndexOf(this.char)
+			this.pos.max = this.mask.lastIndexOf(this.char) + 1
 
 			this.setValue(this.node.value)
 
@@ -96,6 +101,8 @@ export default class Maskable {
 	}
 
 	getMask({ mask, char }) {
+		mask = mask.replace(/[\'\`]/g, '')
+
 		const symbols = mask
 			.replace(/ /g, '')
 			.split('')
@@ -164,7 +171,6 @@ export default class Maskable {
 					.replace(/\D/g, '')
 
 				if (value.length >= 11) {
-					console.log('here?')
 					value = value.slice(0, -1)
 				}
 			}
