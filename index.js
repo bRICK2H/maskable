@@ -11,6 +11,7 @@ export default class Maskable {
 		this.mask = ''
 		this.char = '_'
 		this.value = ''
+		this.modified = ''
 		this.type = null
 		this.node = null
 		this.pos = {
@@ -26,6 +27,10 @@ export default class Maskable {
 
 	get _value() {
 		return this.value
+	}
+
+	get _modified() {
+		return this.modified
 	}
 
 	/**
@@ -45,7 +50,8 @@ export default class Maskable {
 			if (!this.node) {
 				console.warn('[Maskable]: Элемент узла не найден.')
 			} else {
-				this.initMask({ mask, char })
+				console.warn(mask, char)
+				this.initProperty({ mask, char })
 			}
 		// })
 	}
@@ -65,7 +71,7 @@ export default class Maskable {
 	 * @param { Ojbect } options
 	 */
 
-	initMask({ mask, char }) {
+	initProperty({ mask, char }) {
 		char = char.replace(/ /g, '')
 
 		if (!mask) {
@@ -101,8 +107,6 @@ export default class Maskable {
 	}
 
 	getMask({ mask, char }) {
-		mask = mask.replace(/[\'\`]/g, '')
-
 		const symbols = mask
 			.replace(/ /g, '')
 			.split('')
@@ -159,16 +163,16 @@ export default class Maskable {
 	 */
 
 	setValue(value) {
+		console.log('setValue', value)
 		const { 
 			type, mask, char, node,
 		} = this
 
 		switch (type) {
+
 			// Phone
 			case 10: {
-				value = value
-					.replace(/\+7/, '')
-					.replace(/\D/g, '')
+				value = value.replace(/\+7|\D/g, '')
 
 				if (value.length >= 11) {
 					value = value.slice(0, -1)
@@ -193,6 +197,15 @@ export default class Maskable {
 			.join('')
 
 		node.value = this.value = finallyValue
-		
+
+
+		// Создаем модицикации значений для определенного типа
+		switch (type) {
+
+			// Phone
+			case 10: {
+				this.modified = finallyValue.replace(/[^\+7\d]/g, '')
+			}
+		}
 	}
 }
