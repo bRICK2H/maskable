@@ -10,14 +10,19 @@ const EVENTS = [
 ]
 
 export default ctx => {
-	const { node } = ctx
-		,	listener = runEvents.bind(ctx)
+	const { node, isModified } = ctx
+		, 	bubblingListener = runEvents.bind(ctx, false)
+		, 	capturingListener = runEvents.bind(ctx, true)
 
 	for (const event of EVENTS) {
 		if (event === 'input') {
-			node.addEventListener(event, listener, { capture: true })
+			node.addEventListener(event, capturingListener, { capture: true })
+			
+			if (isModified) {
+				node.addEventListener(event, bubblingListener)
+			}
 		} else {
-			node.addEventListener(event, listener)
+			node.addEventListener(event, bubblingListener)
 		}
 	}
 }

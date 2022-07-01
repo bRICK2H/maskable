@@ -23,7 +23,7 @@ export default {
 			bind(el, binding, vnode) {
 				const { value } = binding
 					,	{ data, context } = vnode
-					, 	{ isImmediate = true } = value
+					, 	{ isImmediate = true, isModified } = value
 					, 	vModel = data?.directives.find(({ name }) => name === 'model')
 					
 				maskable = new Maskable(getMaskOptions(el, value))
@@ -38,17 +38,24 @@ export default {
 										? acc[dir] : acc
 								}, context)
 
-					vObjectReference[vPropName] = maskable._value
+						vObjectReference[vPropName] = isModified
+							? maskable._modified
+							: maskable._value
 
 					setGetters(maskable, value)
 				}
 			},
 
-			componentUpdated(_, binding) {
+			componentUpdated(el, binding) {
 				const { value } = binding
+					,	{ isModified } = value
+
+				if (isModified) {
+					el.value = maskable._value
+				}
 
 				setGetters(maskable, value)
-			}
+			},
 		})
 	}
 }
