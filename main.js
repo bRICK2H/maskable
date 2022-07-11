@@ -34,12 +34,12 @@ export default {
 						,	vPropName = vValNames[vValNames.length - 1]
 						,	vObjectReference = vValNames
 								.reduce((acc, dir) => {
-									return typeof acc[dir] === 'object'
+									return typeof acc[dir] === 'object' && acc[dir] !== null
 										? acc[dir] : acc
 								}, context)
-
+						
 						vObjectReference[vPropName] = isModified
-							? maskable._modified
+							? String(maskable._modified)
 							: maskable._value
 
 					setGetters(maskable, value)
