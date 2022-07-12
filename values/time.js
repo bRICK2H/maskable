@@ -30,24 +30,56 @@ export default class Time {
 		console.log('F', f)
 		const [h, m] = f.replace(/[^\d:_]/g, '').split(':')
 		let hArr = h.split('')
-		const hNumber = hArr.filter(n => !isNaN(+n))
+		const hNumber = hArr
+			.filter(n => !isNaN(+n))
+			.map(n => +n)
 		const mArr = m.split('')
 
-		if (hNumber.length === 1) {
-			const [hour] = hNumber
-			console.error(hour)
-
-			if ((+`${hour}0` * 60) > 1440) {
-				hArr = hArr.reverse().map(val => val === this.char ? 0 : +val)
-			} else {
-				hArr = hArr.map(val => val === this.char ? this.char : +val)
+		switch (hNumber.length) {
+			case 1: {
+				const [first] = hNumber
+				
+				if ((first * 10 * 60) >= 1440) {
+					hArr = hArr.reverse().map(val => val === this.char ? 0 : +val)
+				}
+				
 			}
+				break
+				
+			case 2: {
 
-			console.log(hArr)
-		} else {
-			console.log('2', hArr)
-			hArr = hArr.map(val => val === this.char ? this.char : +val)
+			}
+				break
+
+			case 3: {
+
+			}
+				break
+
+			case 4: {
+
+			}
+				break
+
 		}
+
+		// if (hNumber.length === 1) {
+		// 	const [hour] = hNumber
+		// 	console.error(hour)
+
+		// 	if (+`${hour}0` * 60 > 1440) {
+		// 		hArr = hArr.reverse().map(val => val === this.char ? 0 : +val)
+		// 	} else {
+		// 		hArr = hArr.map(val => val === this.char ? this.char : +val)
+		// 	}
+
+		// 	console.log(hArr)
+		// } else {
+		// 	if (+hour.join('') * 60 > 1440) {
+		// 		// const numericValue = Number(h) * 60 + Number(m)
+		// 	}
+		// 	hArr = hArr.map(val => val === this.char ? this.char : +val)
+		// }
 
 		
 		console.log('hm: ', { hArr, mArr }, hNumber)
