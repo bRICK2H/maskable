@@ -7,11 +7,63 @@ export default class Time {
 		const { node,  mask, char } = ctx
 		this.isNumber = !isNaN(+value) && !isNaN(parseFloat(value))
 
+		console.log('val', value)
 		value = value
 			.replace(/\D/g, '')
 			.split('')
+		const [hr1, hr2, mt1, mt2] = value
+		console.warn('value', value)
+
+
+		switch (value.length) {
+			case 1: {
+				const hours = hr1 * 10 * 60
+				
+				if (hours >= 1440) {
+					value.splice(0, 1)
+				}
+			}
+				break
+				
+			case 2: {
+				console.warn((hr1 + hr2) * 60)
+				const hours = +(hr1 + hr2) * 60
+
+				if (hours >= 1440) {
+					value = this.parseToString(hours)
+				}
+			}
+				break
+				
+			case 3: {
+				
+			}
+				break
+
+			case 4: {
+
+			}
+				break
+		}
 		
-		console.log(value)
+		console.warn('afterVal', value)
+
+		const f1 = mask
+			.split('')
+			.map(el => {
+				if (el === char) {
+					return value.length
+						? value.splice(0, 1)
+						: char
+				}
+
+				return el
+			})
+			.join('')
+
+		node.value = ctx.value = f1
+		
+		return
 
 		const f = mask
 			.split('')
@@ -28,63 +80,68 @@ export default class Time {
 
 		// node.value = ctx.value = f
 		console.log('F', f)
-		const [h, m] = f.replace(/[^\d:_]/g, '').split(':')
-		let hArr = h.split('')
-		const hNumber = hArr
-			.filter(n => !isNaN(+n))
-			.map(n => +n)
-		const mArr = m.split('')
 
-		switch (hNumber.length) {
-			case 1: {
-				const [first] = hNumber
-				
-				if ((first * 10 * 60) >= 1440) {
-					hArr = hArr.reverse().map(val => val === this.char ? 0 : +val)
-				}
-				
-			}
+		const getArrayTime = f => {
+			return f
+				.replace(/[\D]/g, '')
+				.split('')
+				.map(n => +n)	
+		}
+		const arrayTime = getArrayTime(f)
+			,	[h1, h2, m1, m2] = arrayTime
+		
+		const result = []
+
+		console.log('hm', h1, h2, m1, m2, arrayTime)
+
+		switch (arrayTime.length) {
+			case 1: result.push(...(h1 * 10 * 60) >= 1440 ? [0, h1] : [h1])
 				break
 				
 			case 2: {
+				// const [first, second] = arrayTime
+				// 	,	hour = +`${first}${second}` * 60
 
+				// if (hour >= 1440) {
+				// 	const [hs, ms] = this.parseToString(hour)
+
+				// 	hArr = hs
+				// 	mArr = ms
+				// }
+
+				result.push(h2)
 			}
 				break
 
 			case 3: {
+				// const [,, three] = arrayTime
 
+				// if ((three * 10 * 60) >= 1440) {
+				// 	console.error('AAA', three)
+				// 	// hArr = hArr.reverse().map(val => val === this.char ? 0 : +val)
+				// 	hArr.push(...hArr.splice(2, 1, 0))
+				// }
 			}
 				break
 
 			case 4: {
+				// const [,, three, four] = arrayTime
+				// 	, hour = +`${three}${four}` * 60
 
+				// if (hour >= 1440) {
+				// 	const [hs, ms] = this.parseToString(hour)
+
+				// 	// hArr = hs
+				// 	mArr = ms
+				// }
 			}
 				break
 
 		}
 
-		// if (hNumber.length === 1) {
-		// 	const [hour] = hNumber
-		// 	console.error(hour)
+		console.error('result', result)
 
-		// 	if (+`${hour}0` * 60 > 1440) {
-		// 		hArr = hArr.reverse().map(val => val === this.char ? 0 : +val)
-		// 	} else {
-		// 		hArr = hArr.map(val => val === this.char ? this.char : +val)
-		// 	}
-
-		// 	console.log(hArr)
-		// } else {
-		// 	if (+hour.join('') * 60 > 1440) {
-		// 		// const numericValue = Number(h) * 60 + Number(m)
-		// 	}
-		// 	hArr = hArr.map(val => val === this.char ? this.char : +val)
-		// }
-
-		
-		console.log('hm: ', { hArr, mArr }, hNumber)
-
-		let subValue = [...hArr, ...mArr].filter(n => typeof n === 'number')
+		let subValue = result.filter(n => typeof n === 'number')
 		console.log('subValue', subValue)
 
 		const f2 = mask
@@ -173,25 +230,32 @@ export default class Time {
 	
 	parseToString(value) {
 		value = +value % 1440
-		console.error(value)
+		console.error(value, value % 60)
 
-		const h = Math.floor(value / 60)
-			, m = value % 60
-			, hArr = String(h).split('')
-			, mArr = String(m).split('')
+		const h = String(Math.floor(value / 60))
+			, 	m = String(value % 60)
+			,	getArrayTime = time => {
+					time = String(time)
+				
+					return time.length === 1
+						? [0, +time]
+						: time.split('').map(n => +n)
+				}
 
-		console.log('__', value, hArr, mArr)
-
-		return [...this.fillValue(hArr), ...this.fillValue(mArr)]
+		return [
+			...getArrayTime(h),
+			...getArrayTime(m)
+		]
+		// return [
+		// 	...this.fillValue(getArrayTime(h)),
+		// 	...this.fillValue(getArrayTime(m))
+		// ]
 	}
 
 	fillValue(values) {
-		console.log('this', values)
 		const fillable = new Array(2).fill(this.char)
 
 		return fillable.reduceRight((acc, val, i) => {
-
-			console.log('+values[i]', values[i] , +values[i])
 			values.length === 2
 				? acc.unshift(+values[i])
 				: !values[i]
@@ -199,7 +263,6 @@ export default class Time {
 					: acc.push(+values[i])
 
 			return acc
-
 		}, [])
 	}
 	
