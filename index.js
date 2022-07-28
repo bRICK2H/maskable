@@ -5,7 +5,8 @@
  * 3. time __:__ (4)
  */
 import eventRegister from './event/register'
-import Time from './values/time'
+import setTimeValue from './values/time-value'
+import setPhoneValue from './values/phone-value'
 
 export default class Maskable {
 	constructor (options = {}) {
@@ -17,6 +18,7 @@ export default class Maskable {
 		this.modified = ''
 		this.type = null
 		this.node = null
+		this.isLoad = false
 		this.isModified = false
 		this.pos = {
 			min: 0,
@@ -168,57 +170,20 @@ export default class Maskable {
 	 */
 
 	setValue(value) {
-		const { 
-			type
-		} = this
-
-		console.log('setValue', {value, type})
+		const { type } = this
+		, ctx = this
 
 		switch (type) {
-
-			// Phone
-			case 10: this.setPhone(value)
+			case 4: setTimeValue({ ctx, value })
+				break
+			
+			case 10: setPhoneValue({ ctx, value })
 				break
 
-			// Time
-			// case 4: this.setTime(value)
-			case 4: new Time({
-				value, ctx: this
-			})
 		}
 
-	}
+		this.isLoad = true
 
-	setPhone(value) {
-		const {
-			mask, char, node
-		} = this
-
-		value = value.replace(/\+7|\D/g, '')
-
-		if (value.length >= 11) {
-			value = value.slice(0, -1)
-		}
-
-		value = value.split('')
-
-		const finallyValue = mask
-			.split('')
-			.map(el => {
-				if (el === char) {
-					return value.length
-						? value.splice(0, 1)
-						: char
-				}
-
-				return el
-			})
-			.join('')
-
-		node.value = this.value = finallyValue
-
-		// Создаем модицикации значений для определенного типа
-		this.modified = finallyValue.replace(/[^\+7\d]/g, '')
 	}
 	
 }
