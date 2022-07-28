@@ -19,7 +19,7 @@ export default class Maskable {
 		this.type = null
 		this.node = null
 		this.isLoad = false
-		this.isModified = false
+		this.modify = false
 		this.pos = {
 			min: 0,
 			max: 0
@@ -50,11 +50,11 @@ export default class Maskable {
 			el = null,
 			mask = '',
 			char = '_',
-			isModified = false,
+			modify = false,
 		} = options
 
 		this.node = this.getInputNode(el)
-		this.isModified = isModified
+		this.modify = modify
 
 		if (!this.node) {
 			console.warn('[Maskable]: Элемент узла не найден.')

@@ -1,10 +1,10 @@
 export default function (e, h, isCapture) {
 	const { target } = e
-		, 	{ codes, isModified } = this
+		, 	{ codes, modify } = this
 
 	this.setValue(target.value)
 	
-	if (isCapture && isModified) {
+	if (isCapture && modify) {
 		target.value = this.modified
 	} else {
 		const [start, end] = codes.backspace
