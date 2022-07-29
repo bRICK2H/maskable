@@ -5,8 +5,8 @@
  * 3. time __:__ (4)
  */
 import eventRegister from './event/register'
-import setTimeValue from './values/time-value'
-import setPhoneValue from './values/phone-value'
+import setTimeValue from './values/time'
+import setPhoneValue from './values/phone'
 
 export default class Maskable {
 	constructor (options = {}) {
