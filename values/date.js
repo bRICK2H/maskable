@@ -1,13 +1,7 @@
-const getMaskedPhone = (ctx, value) => {
+const getMaskedDate = (ctx, value) => {
 	const {
 		mask, char
 	} = ctx
-
-	value = value.replace(/\+7|\D/g, '')
-
-	if (value.length >= 11) {
-		value = value.slice(0, -1)
-	}
 
 	value = value.split('')
 
@@ -27,9 +21,9 @@ const getMaskedPhone = (ctx, value) => {
 
 export default ({ ctx, value, }) => {
 	const { node } = ctx
-		,	rValue = getMaskedPhone(ctx, value)
+		,	rValue = getMaskedDate(ctx, value)
 
 	node.value =
 	ctx.value = rValue
-	ctx.modified = rValue.replace(/[^\+7\d]/g, '')
+	// ctx.modified = rValue.replace(/[^\+7\d]/g, '')
 }

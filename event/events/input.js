@@ -1,7 +1,8 @@
 export default function (e, h, isCapture) {
 	const { target } = e
-		, 	{ codes, modify } = this
-
+		, 	{ codes, modify, pos } = this
+	
+	pos.start = target.selectionStart
 	this.setValue(target.value)
 	
 	if (isCapture && modify) {

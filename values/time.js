@@ -1,3 +1,14 @@
+const arrayFill = (array, n, isArray = false) => {
+	const arr = new Array(n).fill(null)
+
+	return arr.map(() => {
+		const value = array.splice(0, n)
+		
+		return isArray
+			? value : value.join('')
+	})
+}
+
 const getSeparator = (char, value) => {
 	const pattern = new RegExp(`[\\d${char} ]`, 'g')
 	
@@ -67,32 +78,54 @@ const getValidMinutes = value => {
 	return arrayValue
 }
 
-const getValidTime = value => {
-	value = value
+const getValidTime = (ctx, value) => {
+	const arrayValue = value
 		.replace(/\D/g, '')
 		.split('')
 
-	const [hr1, hr2, mt1] = value
+	const [hr1, hr2, mt1] = arrayValue
+		, { char, mask, pos: { start } } = ctx
 
-	if (hr1 * 10 * 60 >= 1440) {
-		value.splice(0, 0, '0')
+	if (arrayValue.length > 4) {
+		const indexChars = mask
+			.split('')
+			.reduce((acc, curr, i) => (curr === char ? acc.push(i + 1) : null, acc), [])
+		, 	index = indexChars.findIndex(n => n === start)
+
+		if (index !== -1) {
+			arrayValue.splice(index + 1, 1)
+		} else {
+			if (value.length !== start) {
+				arrayValue.splice(3, 1)
+			}
+		}
+
+		const [h, m] = arrayFill(arrayValue, 2)
+
+		return [...getValidHours(h), ...getValidMinutes(m)]
+		
+	} else {
+		if (hr1 * 10 * 60 >= 1440) {
+			arrayValue.splice(0, 0, '0')
+		}
+	
+		const hours = +(hr1 + hr2) * 60
+	
+		if (hours > 1440) {
+			arrayValue.splice(0, 1, '0')
+		} else if (hours === 1440) {
+			arrayValue.forEach((_, i) => {
+				if (i <= 1) arrayValue.splice(i, 1, '0')
+			})
+		}
+	
+		if (mt1 * 10 >= 60) {
+			arrayValue.splice(2, 0, '0')
+		}
 	}
 
-	const hours = +(hr1 + hr2) * 60
 
-	if (hours > 1440) {
-		value.splice(0, 1, '0')
-	} else if (hours === 1440) {
-		value.forEach((_, i) => {
-			if (i <= 1) value.splice(i, 1, '0')
-		})
-	}
-
-	if (mt1 * 10 >= 60) {
-		value.splice(2, 0, '0')
-	}
-
-	return value
+	return arrayValue
 }
 
 const getMaskedTime = (ctx, value) => {
@@ -170,7 +203,7 @@ export default ({ ctx, value }) => {
 		}
 	}
 
-	value = getValidTime(value)
+	value = getValidTime(ctx, value)
 
 	const rValue = getMaskedTime(ctx, value)
 		,	mValue = getMinuteTime(ctx, rValue)

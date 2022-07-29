@@ -5,8 +5,9 @@
  * 3. time __:__ (4)
  */
 import eventRegister from './event/register'
-import setTimeValue from './values/time'
-import setPhoneValue from './values/phone'
+import setTime from './values/time'
+import setDate from './values/date'
+import setPhone from './values/phone'
 
 export default class Maskable {
 	constructor (options = {}) {
@@ -21,6 +22,7 @@ export default class Maskable {
 		this.isLoad = false
 		this.modify = false
 		this.pos = {
+			start: 0,
 			min: 0,
 			max: 0
 		}
@@ -171,13 +173,16 @@ export default class Maskable {
 
 	setValue(value) {
 		const { type } = this
-		, ctx = this
+		, options = { ctx: this, value }
 
 		switch (type) {
-			case 4: setTimeValue({ ctx, value })
+			case 4: setTime(options)
+				break
+
+			case 8: setDate(options)
 				break
 			
-			case 10: setPhoneValue({ ctx, value })
+			case 10: setPhone(options)
 				break
 
 		}
