@@ -16,7 +16,7 @@ const getSeparator = (char, value) => {
 }
 
 const getValidHours = value => {
-	value = value.replace(/0/g, '')
+	// value = value.replace(/0/g, '')
 	const arrayValue = value.split('')
 
 	switch (value.length) {
@@ -123,7 +123,6 @@ const getValidTime = (ctx, value) => {
 			arrayValue.splice(2, 0, '0')
 		}
 	}
-
 
 	return arrayValue
 }
