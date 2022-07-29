@@ -5,7 +5,8 @@
  * 3. time __:__ (4)
  */
 import eventRegister from './event/register'
-import setTime from './values/time'
+// import setTime from './values/time'
+import setTime2 from './values/time2'
 import setDate from './values/date'
 import setPhone from './values/phone'
 
@@ -176,7 +177,8 @@ export default class Maskable {
 		, options = { ctx: this, value }
 
 		switch (type) {
-			case 4: setTime(options)
+			// case 4: setTime(options)
+			case 4: setTime2(options)
 				break
 
 			case 8: setDate(options)
