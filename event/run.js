@@ -1,4 +1,4 @@
-import h from '../helpers'
+import h from '../helpers/cursor'
 
 export default function (isCapture, e) {
 	const { type } = e

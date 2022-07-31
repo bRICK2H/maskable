@@ -9,6 +9,7 @@ import eventRegister from './event/register'
 import setTime2 from './values/time2'
 import setDate from './values/date'
 import setPhone from './values/phone'
+import setPhone2 from './values/phone2'
 
 export default class Maskable {
 	constructor (options = {}) {
@@ -17,11 +18,12 @@ export default class Maskable {
 		this.mask = ''
 		this.char = '_'
 		this.value = ''
+		this.prevValue = ''
 		this.modified = ''
+		this.prevModified = ''
 		this.type = null
 		this.node = null
 		this.isLoad = false
-		this.modify = false
 		this.pos = {
 			start: 0,
 			min: 0,
@@ -53,11 +55,9 @@ export default class Maskable {
 			el = null,
 			mask = '',
 			char = '_',
-			modify = false,
 		} = options
 
 		this.node = this.getInputNode(el)
-		this.modify = modify
 
 		if (!this.node) {
 			console.warn('[Maskable]: Элемент узла не найден.')
@@ -184,7 +184,8 @@ export default class Maskable {
 			case 8: setDate(options)
 				break
 			
-			case 10: setPhone(options)
+			// case 10: setPhone(options)
+			case 10: setPhone2(options)
 				break
 
 		}

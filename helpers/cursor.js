@@ -6,30 +6,12 @@ const isFullValue = ctx => {
 
 const findFirstEmptyIndex = ctx => {
 	const {
-		char, value, pos: { max }
+		char, value
 	} = ctx
-		,	index = value.indexOf(char)
+	,	index = value.indexOf(char)
 	
 	return index !== -1
-		? [index, index]
-		: [max, max]
-}
-
-const findPrevNumberIndex = ctx => {
-	const {
-		node,
-		char,
-		value,
-		pos: { min }
-	} = ctx
-	, arrValue = value.split('')
-	, curr = node.selectionStart
-	, prev = arrValue
-		.findLastIndex((n, i) => i >= min && i <= curr && /\w/.test(n) && n !== char)
-	
-	return prev !== -1
-		? [prev + 1, prev + 1]
-		: [min, min]
+		? [index, index] : null
 }
 
 const findNeighborNumberIndex = ctx => {
@@ -74,9 +56,46 @@ const findAllowedIndex = ctx => {
 	return [index, index]
 }
 
+// --
+const findNextNumberIndex = ctx => {
+	const { value, pos: { start } } = ctx
+
+	const index = value
+		.split('')
+		.findIndex((curr, i) => {
+			return i >= start && /\d/.test(curr)
+		})
+
+	return index !== -1 ? [index, index] : null
+}
+
+const findPrevNumberIndex = ctx => {
+	const {
+		char,
+		value,
+		pos: { start, min }
+	} = ctx
+
+	if (value[start] === char) {
+		return findFirstEmptyIndex(ctx)
+	} else {
+		const index = value
+			.split('')
+			.findLastIndex((curr, i) => {
+				return i >= min && i <= start && /\d/.test(curr)
+			})
+	
+		console.error(index, value[start - 1], value[start])
+	
+		return index !== -1 ? [index + 1, index + 1] : null
+	}
+}
+
 export default {
 	isFullValue,
 	findFirstEmptyIndex,
-	findPrevNumberIndex,
 	findAllowedIndex,
+
+	findNextNumberIndex,
+	findPrevNumberIndex
 }

@@ -1,7 +1,21 @@
+import formatMask from '../helpers/mask'
+
 const getSeparator = (char, value) => {
 	const pattern = new RegExp(`[\\d${char} ]`, 'g')
 
 	return value.replace(pattern, '')
+}
+
+const arrayFill = (array, n, isArray = false) => {
+	const arr = new Array(n).fill(null)
+		,	arrayValue = [...array]
+
+	return arr.map(() => {
+		const value = arrayValue.splice(0, n)
+
+		return isArray
+			? value : value.join('')
+	})
 }
 
 const getMaskedTime = (ctx, value) => {
@@ -22,7 +36,7 @@ const getMaskedTime = (ctx, value) => {
 		})
 		.join('')}
 
-const getValueTime = (ctx, value) => {
+const formatTime = (ctx, value) => {
 	const { char } = ctx
 		, separator = getSeparator(char, value)
 		, fValue = value.replace(/\D/g, '').split('')
@@ -35,27 +49,12 @@ const getValueTime = (ctx, value) => {
 }
 
 export default ({ ctx, value }) => {
-	const { node, mask, char, pos: { start } } = ctx
+	const { node } = ctx
 
-	value = value
-		.replace(/\D/g, '')
-		.split('')
-
-	const indexChars = mask
-		.split('')
-		.reduce((acc, curr, i) => (curr === char ? acc.push(i + 1) : null, acc), [])
-	, index = indexChars.findIndex(n => n === start)
-
-	if (index !== -1) {
-		console.log(indexChars, index)
-	}
-
-	const rValue = getMaskedTime(ctx, value)
-		,	mValue = getValueTime(ctx, rValue)
-	console.log('init', value)
-
+	const maskValue = formatMask(ctx, value)
+		, 	modifyValue = formatTime(ctx, maskValue)
 
 	node.value =
-		ctx.value = rValue
-	ctx.modified = mValue
+	ctx.value = maskValue
+	ctx.modified = modifyValue
 }
