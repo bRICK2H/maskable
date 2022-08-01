@@ -141,11 +141,9 @@ const parseString = (ctx, value) => {
 		)
 	} else {
 		const charReg = new RegExp(`${char}`, 'g')
-		// left side
 		, hArray = side === 0
 			? getValidHours(ctx, h.replace(charReg, ''))
 			: h.split('')
-		// right side
 		, mArray = side === 1
 			? getValidMinutes(ctx, m.replace(charReg, ''))
 			: m.split('')

@@ -31,6 +31,8 @@ export default class Maskable {
 		}
 		this.codes = {
 			past: false,
+			shift: false,
+			control: false,
 			backspace: false,
 		}
 
