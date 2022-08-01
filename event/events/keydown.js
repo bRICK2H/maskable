@@ -1,6 +1,12 @@
 export default function (e, h) {
 	const { target, code, key } = e
-		, { codes, pos, pos: { start, min, max } } = this
+		, {
+			pos,
+			char,
+			value,
+			codes,
+			pos: { start, min, max }
+		} = this
 		, arrows = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown']
 
 	pos.end = target.selectionEnd
@@ -12,7 +18,7 @@ export default function (e, h) {
 	const isArrow = arrows.includes(code) && (!codes.shift && !codes.control)
 	
 	if (isArrow) {
-		console.log(pos.start)
+		console.log(pos.start, value)
 		e.preventDefault()
 
 		// setTimeout(() => {
@@ -34,6 +40,9 @@ export default function (e, h) {
 					} else {
 						pos.start += 1
 					}
+
+					const [s] = h.findNextAllowedIndex(this)
+					pos.start = s
 
 					console.log('right', pos.start)
 				}

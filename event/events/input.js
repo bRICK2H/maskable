@@ -4,8 +4,8 @@ export default function (e, h, isCapture) {
 
 	if (isCapture) {
 		pos.start = codes.past
-		? pos.max
-		: target.selectionStart
+			? pos.max
+			: target.selectionStart
 		
 		this.setValue(target.value)
 		target.value = this.modified
@@ -14,13 +14,20 @@ export default function (e, h, isCapture) {
 			target.value = this.value
 		}
 
-		const [start, end] = codes.backspace
-			? h.findPrevNumberIndex(this)
-				?? [pos.min, pos.min]
-			: h.findFirstEmptyIndex(this)
-				?? h.findNextNumberIndex(this)
-				?? [pos.max, pos.max]
+		// const [start, end] = codes.backspace
+		// 	? h.findPrevNumberIndex(this)
+		// 		?? [pos.min, pos.min]
+		// 	: h.findFirstEmptyIndex(this)
+		// 		?? h.findNextNumberIndex(this)
+		// 		?? [pos.max, pos.max]
 
+		const [start, end] = codes.backspace
+			? h.findPrevAllowedIndex(this)
+				?? [pos.min, pos.min]
+			: h.findNextAllowedIndex(this, true)
+				?? [pos.max, pos.max]
+		
+		pos.start = start
 		target.setSelectionRange(start, end)
 	}
 }

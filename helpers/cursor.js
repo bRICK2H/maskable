@@ -59,17 +59,17 @@ const findAllowedIndex = ctx => {
 }
 
 // --
-const findNextNumberIndex = ctx => {
-	const { value, pos: { start } } = ctx
+// const findNextNumberIndex = ctx => {
+// 	const { value, pos: { start } } = ctx
 
-	const index = value
-		.split('')
-		.findIndex((curr, i) => {
-			return i >= start && isNumber(curr)
-		})
+// 	const index = value
+// 		.split('')
+// 		.findIndex((curr, i) => {
+// 			return i >= start && isNumber(curr)
+// 		})
 
-	return index !== -1 ? [index, index] : null
-}
+// 	return index !== -1 ? [index, index] : null
+// }
 
 const findPrevNumberIndex = ctx => {
 	const {
@@ -91,11 +91,79 @@ const findPrevNumberIndex = ctx => {
 	}
 }
 
+const findPrevAllowedIndex = (ctx) => {
+	const {
+		char,
+		value,
+		pos: { start, min },
+	} = ctx
+	, currSymbol = value[start]
+
+	console.error(currSymbol)
+
+	// return !isNumber(currSymbol) && currSymbol !== char
+	// 	? findPrevCharIndex(ctx) : [start, start]
+
+	return findPrevCharIndex(ctx) ?? [min, min]
+	
+	// return currSymbol !== char
+	// 	? findPrevCharIndex(ctx) ?? [min, min]
+	// 	: [start, start]
+}
+
+const findPrevCharIndex = ctx => {
+	const {
+		char,
+		value,
+		pos: { start, min }
+	} = ctx
+
+	const index = value
+		.split('')
+		.findLastIndex((curr, i) => {
+			return i >= min && i <= start && isNumber(curr)
+		})
+
+	console.warn(index)
+
+	return index !== -1 ? [index + 1, index + 1] : null
+}
+
+const findNextAllowedIndex = (ctx, jump = false) => {
+	const {
+		char,
+		value,
+		pos: { start},
+	} = ctx
+	, currSymbol = value[start - (jump ? 0 : 1)]
+
+	return !isNumber(currSymbol) && currSymbol !== char
+		? findNextCharIndex(ctx) : [start, start]
+}
+
+const findNextCharIndex = ctx => {
+	const {
+		char,
+		value,
+		pos: { start }
+	} = ctx
+
+	const index = value
+		.split('')
+		.findIndex((curr, i) => {
+			return i >= start && (curr === char || isNumber(curr)) 
+		})
+
+	return index !== -1 ? [index, index] : null
+}
+
 export default {
 	isFullValue,
 	findFirstEmptyIndex,
 	findAllowedIndex,
 
-	findNextNumberIndex,
-	findPrevNumberIndex
+	// findNextNumberIndex,
+	findPrevNumberIndex,
+	findNextAllowedIndex,
+	findPrevAllowedIndex,
 }
