@@ -2,7 +2,8 @@ import runEvents from './run'
 
 const EVENTS = [
 	'input',
-	// 'keyup',
+	'paste',
+	'keyup',
 	'keydown',
 	// 'dblclick',
 	'pointerup',

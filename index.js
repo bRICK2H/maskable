@@ -5,11 +5,9 @@
  * 3. time __:__ (4)
  */
 import eventRegister from './event/register'
-// import setTime from './values/time'
-import setTime2 from './values/time2'
+import setTime from './values/time'
 import setDate from './values/date'
 import setPhone from './values/phone'
-import setPhone2 from './values/phone2'
 
 export default class Maskable {
 	constructor (options = {}) {
@@ -19,17 +17,20 @@ export default class Maskable {
 		this.char = '_'
 		this.value = ''
 		this.prevValue = ''
+		this.pastValue = ''
 		this.modified = ''
 		this.prevModified = ''
 		this.type = null
 		this.node = null
 		this.isLoad = false
 		this.pos = {
-			start: 0,
 			min: 0,
-			max: 0
+			max: 0,
+			end: 0,
+			start: 0,
 		}
 		this.codes = {
+			past: false,
 			backspace: false,
 		}
 
@@ -121,7 +122,7 @@ export default class Maskable {
 			.replace(/ /g, '')
 			.split('')
 			.reduce((acc, curr) => {
-				if (curr !== '' && /\D/.test(curr)) {
+				if (curr !== '' && /\D/.test(+curr)) {
 					acc[curr] = acc[curr]
 						? [...acc[curr], curr]
 						: [curr]
@@ -177,21 +178,19 @@ export default class Maskable {
 		, options = { ctx: this, value }
 
 		switch (type) {
-			// case 4: setTime(options)
-			case 4: setTime2(options)
+			case 4: setTime(options)
 				break
 
 			case 8: setDate(options)
 				break
 			
-			// case 10: setPhone(options)
-			case 10: setPhone2(options)
+			case 10: setPhone(options)
 				break
 
 		}
 
 		this.isLoad = true
-
+		this.prevValue = this.value
 	}
 	
 }

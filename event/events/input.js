@@ -3,12 +3,13 @@ export default function (e, h, isCapture) {
 		, 	{ codes, pos } = this
 
 	if (isCapture) {
-		pos.start = target.selectionStart
+		pos.start = codes.past
+		? pos.max
+		: target.selectionStart
 		
 		this.setValue(target.value)
 		target.value = this.modified
 	} else {
-		this.prevValue = target.value
 		if (this.modified === this.prevModified) {
 			target.value = this.value
 		}

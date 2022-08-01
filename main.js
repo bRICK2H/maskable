@@ -47,8 +47,8 @@ export default {
 				const { value } = binding
 				
 				setGetters(maskable, value)
+				
 				el.value = maskable._value
-				console.log('componentUpdated', el.value)
 				maskable.prevModified = maskable.modified
 			},
 		})

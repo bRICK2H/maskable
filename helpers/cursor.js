@@ -1,3 +1,5 @@
+import isNumber from './detail/isNumber'
+
 const isFullValue = ctx => {
 	const { char, value } = ctx
 
@@ -63,7 +65,7 @@ const findNextNumberIndex = ctx => {
 	const index = value
 		.split('')
 		.findIndex((curr, i) => {
-			return i >= start && /\d/.test(curr)
+			return i >= start && isNumber(curr)
 		})
 
 	return index !== -1 ? [index, index] : null
@@ -82,10 +84,8 @@ const findPrevNumberIndex = ctx => {
 		const index = value
 			.split('')
 			.findLastIndex((curr, i) => {
-				return i >= min && i <= start && /\d/.test(curr)
+				return i >= min && i <= start && isNumber(curr)
 			})
-	
-		console.error(index, value[start - 1], value[start])
 	
 		return index !== -1 ? [index + 1, index + 1] : null
 	}

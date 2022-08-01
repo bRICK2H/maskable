@@ -1,3 +1,5 @@
+import isNumber from './detail/isNumber'
+
 const allowedCharIndices = (char, mask) => {
 	return mask
 		.split('')
@@ -27,7 +29,7 @@ export default (ctx, value) => {
 				.findIndex(n => n === start)
 
 		if (backspace) {
-			/\d/.test(prevValue[start])
+			isNumber(prevValue[start])
 				? arrayValue.splice(start, 0, char)
 				: arrayValue.splice(start, 0, prevValue[start])
 		} else {
@@ -35,15 +37,9 @@ export default (ctx, value) => {
 				? arrayValue.splice(start, 1)
 				: arrayValue.splice(start - 1, 1)
 		}
-
+		
 		return mask.split('')
-			.map((curr, i) => {
-				if (/\d/.test(arrayValue[i])) {
-					return arrayValue[i]
-				} else {
-					return curr
-				}
-			})
+			.map((curr, i) => isNumber(arrayValue[i]) ? arrayValue[i] : curr)
 			.join('')
 	}
 }
