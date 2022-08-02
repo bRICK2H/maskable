@@ -1,9 +1,3 @@
-/**
- * mask type:
- * 1. phone (___)  ___-__-__ (10)
- * 2. date __.__.____ (8)
- * 3. time __:__ (4)
- */
 import eventRegister from './event/register'
 import setTime from './values/time'
 import setDate from './values/date'
@@ -20,6 +14,7 @@ export default class Maskable {
 		this.pastValue = ''
 		this.modified = ''
 		this.prevModified = ''
+		this.validCounter = 0
 		this.type = null
 		this.node = null
 		this.isLoad = false
@@ -41,6 +36,14 @@ export default class Maskable {
 			: setTimeout(() => this.init(options))
 	}
 
+	set _validCounter(value) {
+		this.validCounter = value
+	}
+	
+	get _validCounter() {
+		return this.validCounter
+	}
+	
 	get _value() {
 		return this.value
 	}

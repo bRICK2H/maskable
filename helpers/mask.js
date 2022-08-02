@@ -1,4 +1,5 @@
 import isNumber from './detail/isNumber'
+import h from './cursor'
 
 const allowedCharIndices = (char, mask) => {
 	return mask
@@ -17,7 +18,7 @@ export default (ctx, value) => {
 		mask,
 		char,
 		prevValue,
-		pos: { start },
+		pos: { start, max },
 		codes: { backspace },
 	} = ctx
 
@@ -29,13 +30,20 @@ export default (ctx, value) => {
 				.findIndex(n => n === start)
 
 		if (backspace) {
+			ctx._validCounter = 0
+			
 			isNumber(prevValue[start])
 				? arrayValue.splice(start, 0, char)
 				: arrayValue.splice(start, 0, prevValue[start])
 		} else {
-			validIndex !== -1
-				? arrayValue.splice(start, 1)
-				: arrayValue.splice(start - 1, 1)
+			ctx._validCounter = validIndex !== -1 || start >= max ? 0 : 1
+
+			if (validIndex !== -1) {
+				arrayValue.splice(start, 1)
+			} else {
+				const [s] = h.findNextAllowedIndex(ctx, true)
+				arrayValue.splice(s, 1, ...arrayValue.splice(start - 1, 1))
+			}
 		}
 		
 		return mask.split('')

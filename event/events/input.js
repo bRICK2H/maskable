@@ -14,11 +14,20 @@ export default function (e, h, isCapture) {
 			target.value = this.value
 		}
 
-		const [start, end] = codes.backspace
+		const [start] = codes.backspace
 			? h.findBackspaceIndex(this)
 			: h.findNextAllowedIndex(this, true)
 		
-		pos.start = start
-		target.setSelectionRange(start, end)
+
+		// pos.start = start
+		
+		// target.setSelectionRange(start, start)
+		// console.warn(this.validCounter && !codes.backspace)
+		
+		const startAfterSplice = !codes.backspace
+			? h.findLastNumberIndex(this) : start
+		pos.start = startAfterSplice
+		
+		target.setSelectionRange(startAfterSplice, startAfterSplice)
 	}
 }

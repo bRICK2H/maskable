@@ -133,23 +133,16 @@ const parseString = (ctx, value) => {
 		, [h, m] = value.replace(timeReg, '').split(separator)
 		, side = arrayFill(allowedCharIndices(char, mask), 2, true)
 			.findIndex(curr => curr.includes(start))
-
-	if (side === -1) {
-		return getMaskedTime(
-			ctx,
-			[...getValidHours(ctx, h), ...getValidMinutes(ctx, m)]
-		)
-	} else {
-		const charReg = new RegExp(`${char}`, 'g')
-		, hArray = side === 0
+	
+	const charReg = new RegExp(`${char}`, 'g')
+		, hArray = [0, -1].includes(side)
 			? getValidHours(ctx, h.replace(charReg, ''))
 			: h.split('')
-		, mArray = side === 1
+		, mArray = [1, -1].includes(side)
 			? getValidMinutes(ctx, m.replace(charReg, ''))
 			: m.split('')
 
-		return getMaskedTime(ctx, [...hArray, ...mArray])
-	}
+	return getMaskedTime(ctx, [...hArray, ...mArray])
 }
 
 
@@ -165,8 +158,8 @@ const parseNumber = (ctx, value) => {
 
 		return arrayTime
 	}
-		, h = String(Math.floor(value / 60))
-		, m = String(value % 60)
+	, h = String(Math.floor(value / 60))
+	, m = String(value % 60)
 
 	return getMaskedTime(
 		ctx,
@@ -233,6 +226,6 @@ export default ({ ctx, value }) => {
 	, modifyValue = formatTime(ctx, maskValue)
 
 	node.value =
-		ctx.value = maskValue
+	ctx.value = maskValue
 	ctx.modified = modifyValue
 }

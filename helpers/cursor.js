@@ -58,18 +58,30 @@ const findAllowedIndex = ctx => {
 	return [index, index]
 }
 
-// --
-// const findNextNumberIndex = ctx => {
-// 	const { value, pos: { start } } = ctx
+// const findLastNumberIndex = ctx => {
+// 	const { value, pos: { max } } = ctx
 
 // 	const index = value
 // 		.split('')
-// 		.findIndex((curr, i) => {
-// 			return i >= start && isNumber(curr)
-// 		})
+// 		.findLastIndex(curr => isNumber(curr))
 
-// 	return index !== -1 ? [index, index] : null
+// 	return index !== -1 ? index + 1: max
 // }
+
+const findLastNumberIndex = ctx => {
+	const { char, value, pos: { max } } = ctx
+
+	const arrayValue = value.split('')
+	, numIndex = arrayValue.findLastIndex(curr => isNumber(curr))
+	, symIndex = arrayValue.findIndex(curr => curr === char)
+	, index = symIndex !== -1
+		? symIndex
+		: numIndex !== -1
+			? numIndex + 1
+			: max
+
+	return index
+}
 
 const findPrevNumberIndex = ctx => {
 	const {
@@ -95,7 +107,7 @@ const findBackspaceIndex = ctx => {
 	const {
 		char,
 		value,
-		pos: { start, min },
+		pos: { start },
 	} = ctx
 	, currSymbol = value[start]
 	, prevSymbol = value[start - 1]
@@ -160,7 +172,7 @@ const findNextAllowedIndex = (ctx, jump = false) => {
 		pos: { start },
 	} = ctx
 	, currSymbol = value[start - (jump ? 0 : 1)]
-
+	
 	return !isNumber(currSymbol) && currSymbol !== char
 		? findNextCharIndex(ctx)
 		: [start, start]
@@ -189,7 +201,7 @@ export default {
 	findFirstEmptyIndex,
 	findAllowedIndex,
 
-	// findNextNumberIndex,
+	findLastNumberIndex,
 	findPrevNumberIndex,
 	findPrevAllowedIndex,
 	findNextAllowedIndex,
