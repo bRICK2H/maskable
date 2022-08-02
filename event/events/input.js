@@ -14,18 +14,9 @@ export default function (e, h, isCapture) {
 			target.value = this.value
 		}
 
-		// const [start, end] = codes.backspace
-		// 	? h.findPrevNumberIndex(this)
-		// 		?? [pos.min, pos.min]
-		// 	: h.findFirstEmptyIndex(this)
-		// 		?? h.findNextNumberIndex(this)
-		// 		?? [pos.max, pos.max]
-
 		const [start, end] = codes.backspace
-			? h.findPrevAllowedIndex(this)
-				?? [pos.min, pos.min]
+			? h.findBackspaceIndex(this)
 			: h.findNextAllowedIndex(this, true)
-				?? [pos.max, pos.max]
 		
 		pos.start = start
 		target.setSelectionRange(start, end)

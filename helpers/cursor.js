@@ -91,24 +91,48 @@ const findPrevNumberIndex = ctx => {
 	}
 }
 
-const findPrevAllowedIndex = (ctx) => {
+const findBackspaceIndex = ctx => {
 	const {
 		char,
 		value,
 		pos: { start, min },
 	} = ctx
 	, currSymbol = value[start]
+	, prevSymbol = value[start - 1]
 
-	console.error(currSymbol)
+	return currSymbol === char
+		&& (!isNumber(prevSymbol) && prevSymbol !== char)
+			? [start, start]
+			: findPrevBackspaceIndex(ctx)
+}
 
-	// return !isNumber(currSymbol) && currSymbol !== char
-	// 	? findPrevCharIndex(ctx) : [start, start]
+const findPrevBackspaceIndex = ctx => {
+	const {
+		value,
+		pos: { start, min }
+	} = ctx
 
-	return findPrevCharIndex(ctx) ?? [min, min]
-	
-	// return currSymbol !== char
-	// 	? findPrevCharIndex(ctx) ?? [min, min]
-	// 	: [start, start]
+	const index = value
+		.split('')
+		.findLastIndex((curr, i) => {
+			return i >= min && i <= start && isNumber(curr)
+		})
+
+	return index !== -1
+		? [index + 1, index + 1]
+		: [min, min]
+}
+
+const findPrevAllowedIndex = (ctx) => {
+	const {
+		char,
+		value,
+		pos: { start },
+	} = ctx
+	, currSymbol = value[start]
+
+	return !isNumber(currSymbol) && currSymbol !== char
+		? findPrevCharIndex(ctx) : [start, start]
 }
 
 const findPrevCharIndex = ctx => {
@@ -121,40 +145,43 @@ const findPrevCharIndex = ctx => {
 	const index = value
 		.split('')
 		.findLastIndex((curr, i) => {
-			return i >= min && i <= start && isNumber(curr)
+			return i >= min && i <= start && (curr === char || isNumber(curr))
 		})
 
-	console.warn(index)
-
-	return index !== -1 ? [index + 1, index + 1] : null
+	return index !== -1
+		? [index + 1, index + 1]
+		: [min, min]
 }
 
 const findNextAllowedIndex = (ctx, jump = false) => {
 	const {
 		char,
 		value,
-		pos: { start},
+		pos: { start },
 	} = ctx
 	, currSymbol = value[start - (jump ? 0 : 1)]
 
 	return !isNumber(currSymbol) && currSymbol !== char
-		? findNextCharIndex(ctx) : [start, start]
+		? findNextCharIndex(ctx)
+		: [start, start]
 }
 
 const findNextCharIndex = ctx => {
 	const {
 		char,
 		value,
-		pos: { start }
+		pos: { start, max }
 	} = ctx
 
 	const index = value
 		.split('')
 		.findIndex((curr, i) => {
-			return i >= start && (curr === char || isNumber(curr)) 
+			return i <= max && i >= start && (curr === char || isNumber(curr)) 
 		})
 
-	return index !== -1 ? [index, index] : null
+	return index !== -1
+		? [index, index]
+		: [max, max]
 }
 
 export default {
@@ -164,6 +191,7 @@ export default {
 
 	// findNextNumberIndex,
 	findPrevNumberIndex,
-	findNextAllowedIndex,
 	findPrevAllowedIndex,
+	findNextAllowedIndex,
+	findBackspaceIndex,
 }

@@ -2,8 +2,6 @@ export default function (e, h) {
 	const { target, code, key } = e
 		, {
 			pos,
-			char,
-			value,
 			codes,
 			pos: { start, min, max }
 		} = this
@@ -18,39 +16,41 @@ export default function (e, h) {
 	const isArrow = arrows.includes(code) && (!codes.shift && !codes.control)
 	
 	if (isArrow) {
-		console.log(pos.start, value)
 		e.preventDefault()
 
-		// setTimeout(() => {
-			// let locStart = target.selectionStart
+		switch (key) {
+			case 'ArrowLeft': {
+				pos.start = start <= min
+					? min
+					: pos.start -= 1
 
-			switch (key) {
-				case 'ArrowLeft': {
-					if (start <= min) {
-						pos.start = min
-					} else {
-						pos.start -= 1
-					}
-				}
-					break
-
-				case 'ArrowRight': {
-					if (start >= max) {
-						pos.start = max
-					} else {
-						pos.start += 1
-					}
-
-					const [s] = h.findNextAllowedIndex(this)
-					pos.start = s
-
-					console.log('right', pos.start)
-				}
-					break
+				const [s] = h.findPrevAllowedIndex(this)
+				pos.start = s
 			}
-			
-			target.setSelectionRange(pos.start, pos.start)
-		// })
+				break
+
+			case 'ArrowRight': {
+				pos.start = start >= max
+					? max
+					: pos.start += 1
+
+				const [s] = h.findNextAllowedIndex(this)
+				pos.start = s
+			}
+				break
+
+			case 'ArrowUp': {
+				pos.start = min
+			}
+				break
+
+			case 'ArrowDown': {
+				pos.start = max
+			}
+				break
+		}
+
+		target.setSelectionRange(pos.start, pos.start)
 	}
 
 }
