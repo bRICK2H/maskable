@@ -14,7 +14,11 @@ export default function (e, h) {
 	
 	codes.delete = code === 'Delete'
 	codes.backspace = code === 'Backspace'
-		
+
+	if (code === 'KeyZ' && codes.control) {
+		target.value = this.value = this.prevValue
+	}
+	
 	const isArrow = arrows.includes(code) && (!codes.shift && !codes.control)
 	
 	if (isArrow) {

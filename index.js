@@ -180,6 +180,8 @@ export default class Maskable {
 	 */
 
 	setValue(value) {
+		this.prevValue = this.value
+		
 		const { type } = this
 		, options = { ctx: this, value }
 
@@ -196,7 +198,6 @@ export default class Maskable {
 		}
 
 		this.isLoad = true
-		this.prevValue = this.value
 	}
 	
 }
