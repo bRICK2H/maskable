@@ -5,9 +5,9 @@ const EVENTS = [
 	'paste',
 	'keyup',
 	'keydown',
-	// 'dblclick',
-	'pointerup',
-	'pointerdown',
+	'mouseup',
+	'touchend',
+	'touchmove',
 ]
 
 export default ctx => {

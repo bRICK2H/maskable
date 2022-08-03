@@ -31,13 +31,13 @@ const parseValue = (ctx, value) => {
 } 
 
 const inputValue = (ctx, value) => {
-	const { pos: { start, end }, prevValue } = ctx
+	const { pos: { min, start, end }, prevValue } = ctx
 
 	if (end - start > 1) {
 		const spliceValue = prevValue
 			.split('')
 			.map((curr, i) => {
-				return i >= start && i < end && isNumber(curr)
+				return i >= min && i >= start && i < end && isNumber(curr)
 					? ctx.char : curr
 			})
 

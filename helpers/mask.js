@@ -19,7 +19,7 @@ export default (ctx, value) => {
 		char,
 		prevValue,
 		pos: { start, max },
-		codes: { backspace },
+		codes: { backspace, delete: del },
 	} = ctx
 
 	if (!value) {
@@ -29,9 +29,9 @@ export default (ctx, value) => {
 			,	validIndex = allowedCharIndices(char, mask)
 				.findIndex(n => n === start)
 
-		if (backspace) {
+		if (backspace || del) {
 			ctx._validCounter = 0
-			
+
 			isNumber(prevValue[start])
 				? arrayValue.splice(start, 0, char)
 				: arrayValue.splice(start, 0, prevValue[start])

@@ -8,10 +8,12 @@ export default function (e, h) {
 		, arrows = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown']
 
 	pos.end = target.selectionEnd
-	codes.backspace = code === 'Backspace'
-		
+
 	if (key === 'Shift') codes.shift = true
 	if (key === 'Control') codes.control = true
+	
+	codes.delete = code === 'Delete'
+	codes.backspace = code === 'Backspace'
 		
 	const isArrow = arrows.includes(code) && (!codes.shift && !codes.control)
 	
@@ -34,7 +36,7 @@ export default function (e, h) {
 					? max
 					: pos.start += 1
 
-				const [s] = h.findNextAllowedIndex(this)
+				const [s] = h.findNextArrowRirghtIndex(this)
 				pos.start = s
 			}
 				break

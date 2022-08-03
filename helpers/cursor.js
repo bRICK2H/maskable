@@ -11,6 +11,8 @@ const findFirstEmptyIndex = ctx => {
 		char, value
 	} = ctx
 	,	index = value.indexOf(char)
+
+	console.log(index)
 	
 	return index !== -1
 		? [index, index] : null
@@ -57,16 +59,6 @@ const findAllowedIndex = ctx => {
 
 	return [index, index]
 }
-
-// const findLastNumberIndex = ctx => {
-// 	const { value, pos: { max } } = ctx
-
-// 	const index = value
-// 		.split('')
-// 		.findLastIndex(curr => isNumber(curr))
-
-// 	return index !== -1 ? index + 1: max
-// }
 
 const findLastNumberIndex = ctx => {
 	const { char, value, pos: { max } } = ctx
@@ -165,6 +157,33 @@ const findPrevCharIndex = ctx => {
 		: [min, min]
 }
 
+const findNextArrowRirghtIndex = ctx => {
+	const {
+		value,
+		pos: { start, max },
+	} = ctx
+
+	const isNextNumber = value
+		.split('')
+		.some((curr, i) => i >= start - 1 && isNumber(curr))
+
+	return isNextNumber
+		? findNextAllowedIndex(ctx)
+		: findNextOneCharIndex(ctx) ?? [max, max]
+}
+
+const findNextOneCharIndex = ctx => {
+	const {
+		char,
+		value,
+		pos: { start }
+	} = ctx
+	, index = value.indexOf(char, start - 1)
+
+	return index !== -1 ? [index, index] : nul
+	
+}
+
 const findNextAllowedIndex = (ctx, jump = false) => {
 	const {
 		char,
@@ -198,12 +217,12 @@ const findNextCharIndex = ctx => {
 
 export default {
 	isFullValue,
+	findAllowedIndex,	
+	findBackspaceIndex,
 	findFirstEmptyIndex,
-	findAllowedIndex,
-
 	findLastNumberIndex,
 	findPrevNumberIndex,
 	findPrevAllowedIndex,
 	findNextAllowedIndex,
-	findBackspaceIndex,
+	findNextArrowRirghtIndex,
 }

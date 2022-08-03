@@ -1,4 +1,4 @@
-export default function(e, h) {
+export default function(e) {
 	const { key } = e
 		,	{ codes } = this
 

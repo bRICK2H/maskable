@@ -28,6 +28,7 @@ export default class Maskable {
 			past: false,
 			shift: false,
 			control: false,
+			touchmove: false,
 			backspace: false,
 		}
 
@@ -43,7 +44,7 @@ export default class Maskable {
 	get _validCounter() {
 		return this.validCounter
 	}
-	
+
 	get _value() {
 		return this.value
 	}

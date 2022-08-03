@@ -1,6 +1,6 @@
 export default function (e, h, isCapture) {
 	const { target } = e
-		, 	{ codes, pos } = this
+		, 	{ codes, pos, pos: { start, max } } = this
 
 	if (isCapture) {
 		pos.start = codes.past
@@ -13,21 +13,23 @@ export default function (e, h, isCapture) {
 		if (this.modified === this.prevModified) {
 			target.value = this.value
 		}
+		
+		if (!codes.delete) {
+			const [s] = codes.backspace
+				? h.findBackspaceIndex(this)
+				: h.findNextAllowedIndex(this, true)
+				
+			pos.start = !codes.backspace
+				? h.findLastNumberIndex(this) : s
+		} else {
+			pos.start = start >= max
+				? max
+				: pos.start += 1
 
-		const [start] = codes.backspace
-			? h.findBackspaceIndex(this)
-			: h.findNextAllowedIndex(this, true)
+			const [s] = h.findNextArrowRirghtIndex(this)
+			pos.start = s
+		}
 		
-
-		// pos.start = start
-		
-		// target.setSelectionRange(start, start)
-		// console.warn(this.validCounter && !codes.backspace)
-		
-		const startAfterSplice = !codes.backspace
-			? h.findLastNumberIndex(this) : start
-		pos.start = startAfterSplice
-		
-		target.setSelectionRange(startAfterSplice, startAfterSplice)
+		target.setSelectionRange(pos.start, pos.start)
 	}
 }
