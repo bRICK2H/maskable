@@ -1,5 +1,6 @@
 import isNumber from '../helpers/detail/isNumber'
 import formatMask from '../helpers/mask'
+import getSeparator from '../helpers/detail/separator'
 
 const arrayFill = (array, n, isArray = false) => {
 	const arr = new Array(n).fill(null)
@@ -24,13 +25,6 @@ const allowedCharIndices = (char, mask) => {
 			return acc
 		}, [])
 }
-
-const getSeparator = (char, value) => {
-	const pattern = new RegExp(`[\\d${char} ]`, 'g')
-
-	return value.replace(pattern, '')
-}
-
 
 const getMaskedTime = (ctx, value) => {
 	const {

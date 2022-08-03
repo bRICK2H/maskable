@@ -17,38 +17,40 @@ const setGetters = (maskable, value) => {
 	}
 }
 
+const changeVModel = (value, maskable, vnode) => {
+	const { data, context } = vnode
+		, vModel = data?.directives.find(({ name }) => name === 'model')
+
+	if (vModel) {
+		const { expression } = vModel
+			, vValNames = expression.split('.')
+			, vPropName = vValNames[vValNames.length - 1]
+			, vObjectReference = vValNames
+				.reduce((acc, dir) => {
+					return typeof acc[dir] === 'object' && acc[dir] !== null
+						? acc[dir] : acc
+				}, context)
+
+		setGetters(maskable, value)
+		vObjectReference[vPropName] = maskable._modified
+	}
+}
+
 export default {
 	install(Vue) {
 		Vue.directive('maskable', {
 			bind(el, binding, vnode) {
 				const { value } = binding
-					,	{ data, context } = vnode
-					, 	{ immediate = true } = value
-					, 	vModel = data?.directives.find(({ name }) => name === 'model')
 					
 				maskable = new Maskable(getMaskOptions(el, value))
-
-				if (vModel && immediate) {
-					const { expression } = vModel
-						,	vValNames = expression.split('.')
-						,	vPropName = vValNames[vValNames.length - 1]
-						,	vObjectReference = vValNames
-								.reduce((acc, dir) => {
-									return typeof acc[dir] === 'object' && acc[dir] !== null
-										? acc[dir] : acc
-								}, context)
-						
-					vObjectReference[vPropName] = String(maskable._modified)
-					setGetters(maskable, value)
-				}
+				changeVModel(value, maskable, vnode)
 			},
 
-			componentUpdated(el, binding) {
+			componentUpdated(el, binding, vnode) {
 				const { value } = binding
 				
-				setGetters(maskable, value)
-				
 				el.value = maskable._value
+				changeVModel(value, maskable, vnode)
 				maskable.prevModified = maskable.modified
 			},
 		})
