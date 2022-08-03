@@ -32,7 +32,7 @@ const parseValue = (ctx, value) => {
 }
 
 const inputValue = (ctx, value) => {
-	const { pos: { min, start, end }, prevValue } = ctx
+	const { char, pos: { min, start, end }, prevValue } = ctx
 
 	if (end - start > 1) {
 		const spliceValue = prevValue
@@ -44,27 +44,114 @@ const inputValue = (ctx, value) => {
 
 		return spliceValue.join('')
 	} else {
-		return formatMask(ctx, value)
+		const formatedValue = formatMask(ctx, value)
+			, separator = getSeparator(char, formatedValue)
+			, dateReg = new RegExp(`[\^${separator}\\d${char}]`, 'g')
+			, clearDate = formatedValue
+				.replace(dateReg, '')
+				.replace(separator, '.')
+				.split(separator)
+			, yearIndex = clearDate.findIndex(curr => curr.length === 4)
+
+		if (yearIndex > 0) clearDate.reverse()
+
+		return parseValue(ctx, validateDate(ctx, clearDate).join(separator))
 	}
 }
 
-const formatPhone = (ctx, value) => {
+const validateDate = (ctx, date) => {
+	const { char } = ctx
+	const mapDate = {
+		0: 'year',
+		1: 'month',
+		2: 'day'
+	}
+	const dateModify = date.map((curr, i) => {
+		return {
+			[mapDate[i]]: {
+				name: mapDate[i],
+				length: curr.length,
+				string: !isNaN(parseFloat(curr)) ? curr.replace(char, '') : '',
+				value: !isNaN(parseFloat(curr)) ? parseFloat(curr): '',
+			}
+		}
+	})
+	console.log(dateModify)
+
+	const foo = dt => {
+		const {
+			name,
+			value,
+			string,
+			length,
+		} = dt[Object.keys(dt)]
+		, map = {
+			year: { min: 1900, max: 3000 },
+			month: { min: 1, max: 12 },
+			day: { min: 1, max: 31 }
+		}
+		, {
+			min, max
+		} = map[name]
+
+		console.warn(dt)
+
+		if (value === '') {
+			// Разобраться в последовательности
+			console.log('name', name)
+			return string
+		} else {
+			switch (length) {
+				case 2: {
+					console.error('case 2', value)
+					if (value >= min && value < 10) {
+						console.log('1')
+						// return `0${value}`
+					} else if (string === '0') {
+						console.log('2')
+						return string
+					} else if (value < min) {
+						console.log('3')
+						return `0${min}`
+					} else if (value > max) {
+						console.log('4')
+						return `${max}`
+					}
+				}
+					break
+
+				case 4: {
+					console.error('case 4', value)
+				}
+					break
+			}
+
+			console.log('here')
+			return `${value}`
+		}
+	}
+
+	const res = dateModify.map(foo)
+	console.log(res)
+	return res.reverse()
+	
+}
+
+const formatDate = (ctx, value) => {
 	const { char } = ctx
 		, separator = getSeparator(char, value)
-		, dateReg = new RegExp(`[^\\d${separator}]`, 'g')
+		, dateReg = new RegExp(`[\^\\d${separator}]`, 'g')
 		, clearDate = value
 			.replace(dateReg, '')
 			.replace(separator, '.')
 			.split(separator)
 		, yearIndex = clearDate.findIndex(curr => curr.length === 4)
 
-	console.log(yearIndex, value, clearDate)
 		
 	if (yearIndex > 0) clearDate.reverse()
-
 	const date = new Date(clearDate.join(separator))
 
-	return JSON.parse(JSON.stringify(date)) ?? null
+	return JSON.parse(JSON.stringify(date)) ? date : null
 }
 
 export default ({ ctx, value }) => {
@@ -77,7 +164,7 @@ export default ({ ctx, value }) => {
 	const maskValue = past || !isLoad
 		? parseValue(ctx, value)
 		: inputValue(ctx, value)
-		, modifyValue = formatPhone(ctx, maskValue)
+		, modifyValue = formatDate(ctx, maskValue)
 
 	node.value =
 		ctx.value = maskValue

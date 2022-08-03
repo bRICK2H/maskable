@@ -48,9 +48,10 @@ export default {
 
 			componentUpdated(el, binding, vnode) {
 				const { value } = binding
-				
-				el.value = maskable._value
+
 				changeVModel(value, maskable, vnode)
+
+				el.value = maskable._value
 				maskable.prevModified = maskable.modified
 			},
 		})
