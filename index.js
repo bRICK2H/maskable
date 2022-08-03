@@ -23,6 +23,7 @@ export default class Maskable {
 			max: 0,
 			end: 0,
 			start: 0,
+			range: false
 		}
 		this.codes = {
 			past: false,
@@ -181,7 +182,7 @@ export default class Maskable {
 
 	setValue(value) {
 		this.prevValue = this.value
-		
+
 		const { type } = this
 		, options = { ctx: this, value }
 

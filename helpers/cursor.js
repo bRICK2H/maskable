@@ -12,8 +12,6 @@ const findFirstEmptyIndex = ctx => {
 	} = ctx
 	,	index = value.indexOf(char)
 
-	console.log(index)
-	
 	return index !== -1
 		? [index, index] : null
 }
@@ -34,12 +32,9 @@ const findNeighborNumberIndex = ctx => {
 	, offsetNext = next - curr
 
 	return offsetPrev < offsetNext
-		? prev
-		: offsetPrev > offsetNext
-			? next + 1
-			: next === prev
-				? next + 1
-				: prev + 1
+		|| offsetPrev === offsetNext
+			? prev + 1
+			: next
 }
 
 const findAllowedIndex = ctx => {
