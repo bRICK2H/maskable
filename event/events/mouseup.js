@@ -10,8 +10,6 @@ export default function (e, h) {
 		
 		e.preventDefault()
 	if (target.selectionStart === target.selectionEnd) {
-		console.log('full', h.isFullValue(this))
-		
 		const [start, end] = h.isFullValue(this)
 			? h.findAllowedIndex(this)
 			: h.findFirstEmptyIndex(this)
