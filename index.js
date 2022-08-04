@@ -5,8 +5,9 @@ import setPhone from './values/phone'
 
 export default class Maskable {
 	constructor (options = {}) {
-		const { el } = options
+		const { el, vnode } = options
 		
+		this.vnode = vnode
 		this.mask = ''
 		this.char = '_'
 		this.value = ''

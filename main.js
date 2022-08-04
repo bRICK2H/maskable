@@ -2,9 +2,9 @@ import Maskable from './index'
 
 let maskable = {}
 
-const getMaskOptions = (el, value) => {
+const getMaskOptions = (el, vnode, value) => {
 	return typeof value === 'object'
-		? { ...value, el }
+		? { ...value, el, vnode }
 		: { mask: value, el }
 }
 
@@ -109,17 +109,18 @@ export default {
 			bind(el, binding, vnode) {
 				const { value } = binding
 					
-				maskable = new Maskable(getMaskOptions(el, value))
-				changeVModel(value, maskable, vnode)
+				maskable = new Maskable(getMaskOptions(el, vnode, value))
+				// changeVModel(value, maskable, vnode)
 			},
 
 			componentUpdated(el, binding, vnode) {
-				const { value } = binding
+				console.log('compUpdated')
+				// const { value } = binding
 
-				changeVModel(value, maskable, vnode)
+				// changeVModel(value, maskable, vnode)
 
-				el.value = maskable._value
-				maskable.prevModified = maskable.modified
+				// el.value = maskable._value
+				// maskable.prevModified = maskable.modified
 			},
 		})
 	}
