@@ -36,6 +36,73 @@ const changeVModel = (value, maskable, vnode) => {
 	}
 }
 
+const inputValue = (vnode, maskable) => {
+	const { data, context } = vnode
+		, vMaskable = data?.directives.find(({ name }) => name === 'maskable')
+
+	if (vMaskable) {
+		console.log('vMaskable', vMaskable)
+		const { expression } = vMaskable
+			, refValue = (ctx, key) => {
+				return typeof ctx[key] === 'object'
+					? refValue(ctx[key], String(Object.keys(ctx[key])))
+					: { ctx, key }
+			}
+			, str = expression.replace(/[\n\t\{\}]/g, '')
+			, arrayExpression = str.split(',').reduce((acc, curr) => {
+				const [key, value] = curr.split(':')
+				acc[key] = value.replace(/[ ']/g, '')
+
+				return acc
+			}, {})
+
+		if (arrayExpression['content']) {
+			const root = arrayExpression['content']
+				, { ctx, key } = refValue(context, root)
+
+			console.log(arrayExpression, ctx, key)
+
+			// if (!e) {
+			// 	return ctx[key]
+			// } else {
+			// 	ctx[key] = +e.target.value
+			// }
+
+			ctx[key] = maskable._modified
+		}
+	}
+}
+
+const getRefContentValue = (vnode) => {
+	const { data, context } = vnode
+		, vMaskable = data?.directives.find(({ name }) => name === 'maskable')
+
+	if (vMaskable) {
+		const { expression } = vMaskable
+			, refValue = (ctx, key) => {
+				return typeof ctx[key] === 'object'
+					? refValue(ctx[key], String(Object.keys(ctx[key])))
+					: { ctx, key }
+			}
+			, str = expression.replace(/[\n\t\{\}]/g, '')
+			, arrayExpression = str.split(',').reduce((acc, curr) => {
+				const [key, value] = curr.split(':')
+				acc[key] = value.replace(/[ ']/g, '')
+
+				return acc
+			}, {})
+
+		if (arrayExpression['content']) {
+			const root = arrayExpression['content']
+				, { ctx, key } = refValue(context, root)
+
+			return { ctx, key }
+		}
+
+		return null
+	}
+}
+
 export default {
 	install(Vue) {
 		Vue.directive('maskable', {
