@@ -1,18 +1,19 @@
-import eventRegister from './event/register'
 import setTime from './values/time'
 import setDate from './values/date'
 import setPhone from './values/phone'
+import eventRegister from './event/register'
+import getRefContentValue from './helpers/vue/refContentValue'
 
 export default class Maskable {
 	constructor (options = {}) {
-		const { el, vnode } = options
+		const { el } = options
 		
-		this.vnode = vnode
 		this.mask = ''
 		this.char = '_'
 		this.value = ''
 		this.prevValue = ''
 		this.pastValue = ''
+		this.vueRefContentValue = null
 		this.modified = ''
 		this.prevModified = ''
 		this.validCounter = 0
@@ -64,9 +65,21 @@ export default class Maskable {
 			el = null,
 			mask = '',
 			char = '_',
+			vnode = {},
+			isModified = true
 		} = options
 
+		this.isModified = isModified
 		this.node = this.getInputNode(el)
+		this.vueRefContentValue = getRefContentValue(vnode)
+
+		if (this.vueRefContentValue) {
+			const {
+				ctx, key
+			} = this.vueRefContentValue
+			
+			el.value = ctx[key]
+		}
 
 		if (!this.node) {
 			console.warn('[Maskable]: Элемент узла не найден.')
@@ -182,12 +195,13 @@ export default class Maskable {
 	 */
 
 	setValue(value) {
-		this.prevValue = this.value
+		this.prevValue = this._value
 
 		const { type } = this
 		, options = { ctx: this, value }
 
 		switch (type) {
+
 			case 4: setTime(options)
 				break
 
@@ -197,6 +211,24 @@ export default class Maskable {
 			case 10: setPhone(options)
 				break
 
+		}
+
+		if (this.vueRefContentValue) {
+			const {
+				ctx,
+				key,
+				rootCtx,
+				rootKey,
+				rootValue
+			} = this.vueRefContentValue
+
+			ctx[key] = this.isModified
+				? this._modified
+				: this._value
+
+			if (typeof rootValue === 'object' && rootValue !== null) {
+				rootCtx[rootKey] = JSON.parse(JSON.stringify(rootValue))
+			}
 		}
 
 		this.isLoad = true

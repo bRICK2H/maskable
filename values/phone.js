@@ -48,10 +48,13 @@ const inputValue = (ctx, value) => {
 }
 
 const formatPhone = value => {
-	// return value.replace(/[^\+7\d]/g, '')
-	return +value
-		.replace(/\+7/, '8')
-		.replace(/\D/g, '')
+	const isPhone = value
+		.replace(/\+7/, '')
+		.split('')
+		.some(curr => isNumber(curr))
+
+	return isPhone
+		? value.replace(/[^\+7\d]/g, '') : ''
 }
 
 export default ({ ctx, value }) => {

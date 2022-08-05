@@ -6,6 +6,33 @@ const isFullValue = ctx => {
 	return value.indexOf(char) === -1
 }
 
+const isFullEmpty = ctx => {
+	const {
+		char,
+		value,
+		pos: { min, max }
+	} = ctx
+
+	const regEmpty = new RegExp(`[\^${char}\\d]`, 'g')
+
+	return value
+		.split('')
+		.slice(min, max)
+		.join('')
+		.replace(regEmpty, '')
+		.split('')
+		.every(curr =>  curr === char)
+}
+
+const isNeighborEmpty = ctx => {
+	const {
+		value,
+		pos: { start }
+	} = ctx
+
+	return !isNumber(value[start - 1]) && !isNumber(value[start])
+}
+
 const findFirstEmptyIndex = ctx => {
 	const {
 		char, value
@@ -212,6 +239,8 @@ const findNextCharIndex = ctx => {
 
 export default {
 	isFullValue,
+	isFullEmpty,
+	isNeighborEmpty,
 	findAllowedIndex,	
 	findBackspaceIndex,
 	findFirstEmptyIndex,

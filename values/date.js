@@ -47,36 +47,37 @@ const inputValue = (ctx, value) => {
 		const formatedValue = formatMask(ctx, value)
 			, separator = getSeparator(char, formatedValue)
 			, dateReg = new RegExp(`[\^${separator}\\d${char}]`, 'g')
-			, clearDate = formatedValue
-				.replace(dateReg, '')
-				.replace(separator, '.')
-				.split(separator)
-			, yearIndex = clearDate.findIndex(curr => curr.length === 4)
+			, distDate = distributionDate(formatedValue, separator, dateReg)
+			, distPrevDate = distributionDate(ctx.prevValue, separator, dateReg)
 
-		if (yearIndex > 0) clearDate.reverse()
-
-		return parseValue(ctx, validateDate(ctx, clearDate).join(separator))
+		return parseValue(
+			ctx,
+			validateDate(ctx, distDate, distPrevDate).join(separator)
+		)
 	}
 }
 
-const validateDate = (ctx, date) => {
+const validateDate = (ctx, date, prevDate) => {
 	const { char } = ctx
-	const mapDate = {
+	, mapDate = {
 		0: 'year',
 		1: 'month',
 		2: 'day'
 	}
-	const dateModify = date.map((curr, i) => {
+	, parseNumber = value => !isNaN(parseFloat(value)) ? parseFloat(value) : ''
+	, parseString = (value, char) => !isNaN(parseFloat(value)) ? value.replace(char, '') : ''
+	, dateModify = date.map((curr, i) => {
 		return {
 			[mapDate[i]]: {
 				name: mapDate[i],
-				length: curr.length,
-				string: !isNaN(parseFloat(curr)) ? curr.replace(char, '') : '',
-				value: !isNaN(parseFloat(curr)) ? parseFloat(curr): '',
+				value: parseNumber(curr),
+				string: parseString(curr),
+				length: parseString(curr).length,
+				currLength: String(parseNumber(curr)).length,
+				prevString: parseString(prevDate[i]),
 			}
 		}
 	})
-	console.log(dateModify)
 
 	const foo = dt => {
 		const {
@@ -84,6 +85,8 @@ const validateDate = (ctx, date) => {
 			value,
 			string,
 			length,
+			prevString,
+			currLength,
 		} = dt[Object.keys(dt)]
 		, map = {
 			year: { min: 1900, max: 3000 },
@@ -94,28 +97,31 @@ const validateDate = (ctx, date) => {
 			min, max
 		} = map[name]
 
-		console.warn(dt)
-
-		if (value === '') {
-			// Разобраться в последовательности
-			console.log('name', name)
-			return string
-		} else {
+		if (string !== prevString && value !== '') {
 			switch (length) {
 				case 2: {
-					console.error('case 2', value)
-					if (value >= min && value < 10) {
-						console.log('1')
-						// return `0${value}`
-					} else if (string === '0') {
-						console.log('2')
-						return string
-					} else if (value < min) {
-						console.log('3')
-						return `0${min}`
-					} else if (value > max) {
-						console.log('4')
-						return `${max}`
+					console.error('CASE 2', dt[Object.keys(dt)])
+
+					switch (currLength) {
+						case 1: return string === '00' ? `0${min}` : string
+
+						case 2: {
+
+							if (value >= min && value < 10) {
+								console.log('1')
+								// return `0${value}`
+							} else if (string === '0') {
+								console.log('2')
+								return string
+							} else if (value < min) {
+								console.log('3')
+								return `0${min}`
+							} else if (value > max) {
+								console.log('4')
+								return `${max}`
+							}
+
+						}
 					}
 				}
 					break
@@ -126,9 +132,46 @@ const validateDate = (ctx, date) => {
 					break
 			}
 
-			console.log('here')
-			return `${value}`
+			console.log('here', value)
+			// return `${value}`
+		} else {
+			console.log("GO NAHUJ")
+			return string
 		}
+
+		// if (value === '') {
+		// 	// Разобраться в последовательности
+		// 	console.log('name', name)
+		// 	return string
+		// } else {
+		// 	switch (length) {
+		// 		case 2: {
+		// 			console.error('case 2', value)
+		// 			if (value >= min && value < 10) {
+		// 				console.log('1')
+		// 				// return `0${value}`
+		// 			} else if (string === '0') {
+		// 				console.log('2')
+		// 				return string
+		// 			} else if (value < min) {
+		// 				console.log('3')
+		// 				return `0${min}`
+		// 			} else if (value > max) {
+		// 				console.log('4')
+		// 				return `${max}`
+		// 			}
+		// 		}
+		// 			break
+
+		// 		case 4: {
+		// 			console.error('case 4', value)
+		// 		}
+		// 			break
+		// 	}
+
+		// 	console.log('here')
+		// 	return `${value}`
+		// }
 	}
 
 	const res = dateModify.map(foo)
@@ -137,19 +180,24 @@ const validateDate = (ctx, date) => {
 	
 }
 
+const distributionDate = (value, separator, pattern) => {
+	const date = value
+		.replace(pattern, '')
+		.replace(separator, '.')
+		.split(separator)
+	 , yearIndex = date
+		.findIndex(curr => curr.length === 4)
+
+	return yearIndex > 0
+		? date.reverse() : date
+}
+
 const formatDate = (ctx, value) => {
 	const { char } = ctx
 		, separator = getSeparator(char, value)
 		, dateReg = new RegExp(`[\^\\d${separator}]`, 'g')
-		, clearDate = value
-			.replace(dateReg, '')
-			.replace(separator, '.')
-			.split(separator)
-		, yearIndex = clearDate.findIndex(curr => curr.length === 4)
-
-		
-	if (yearIndex > 0) clearDate.reverse()
-	const date = new Date(clearDate.join(separator))
+		, distDate = distributionDate(value, separator, dateReg)
+		, date = new Date(distDate.join(separator))
 
 	return JSON.parse(JSON.stringify(date)) ? date : null
 }
