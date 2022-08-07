@@ -12,8 +12,7 @@ const isFullEmpty = ctx => {
 		value,
 		pos: { min, max }
 	} = ctx
-
-	const regEmpty = new RegExp(`[\^${char}\\d]`, 'g')
+	, regEmpty = new RegExp(`[\^${char}\\d]`, 'g')
 
 	return value
 		.split('')
@@ -21,7 +20,7 @@ const isFullEmpty = ctx => {
 		.join('')
 		.replace(regEmpty, '')
 		.split('')
-		.every(curr =>  curr === char)
+		.every(curr => curr === char)
 }
 
 const isNeighborEmpty = ctx => {
@@ -33,18 +32,73 @@ const isNeighborEmpty = ctx => {
 	return !isNumber(value[start - 1]) && !isNumber(value[start])
 }
 
+const isNeighborChar = ctx => {
+	const {
+		char,
+		value,
+		pos: { start }
+	} = ctx
+
+	return value[start - 1] === char || value[start] === char
+}
+
+const isNextExistsNumber = ctx => {
+	const {
+		value,
+		pos: { start }
+	} = ctx
+
+	return value
+		.split('')
+		.some((curr, i) => {
+			return i >= start && isNumber(curr)
+		})
+}
+
+const findClosestAllowedIndex = ctx => {
+	const {
+		char,
+		value,
+		pos: { start }
+	} = ctx
+	const prev = start - 1
+		, next = start + 1
+
+	const rec = (prev, next) => {
+		const index = value
+			.split('')
+			.findIndex((curr, i) => {
+				return i >= prev
+					&& i <= next
+					&& (curr === char || isNumber(curr))
+			})
+
+		return index === -1
+			? rec(--prev, ++next)
+			: index === prev
+				? [index + 1, index + 1]
+				: index === next
+					? [index, index]
+					: [start, start]
+	}
+
+	return rec(prev, next)
+}
+
 const findFirstEmptyIndex = ctx => {
 	const {
 		char, value
 	} = ctx
-	,	index = value.indexOf(char)
+	, index = value.indexOf(char)
 
 	return index !== -1
 		? [index, index] : null
 }
 
 const findNeighborNumberIndex = ctx => {
+	console.warn('findNeighborNumberIndex')
 	const {
+		char,
 		node,
 		value,
 		pos: { min },
@@ -52,9 +106,16 @@ const findNeighborNumberIndex = ctx => {
 	, arrValue = value.split('')
 	, curr = node.selectionStart
 	, next = arrValue
-		.findIndex((n, i) => i >= curr && /\w/.test(n))
+		.findIndex((n, i) => {
+			return i >= curr
+				&& (curr === char || isNumber(n))
+		})
 	, prev = arrValue
-		.findLastIndex((n, i) => i >= min && i <= curr && /\w/.test(n))
+		.findLastIndex((n, i) => {
+			return i >= min
+				&& i <= curr
+				&& (curr === char || isNumber(n))
+		})
 	, offsetPrev = curr - prev
 	, offsetNext = next - curr
 
@@ -75,7 +136,7 @@ const findAllowedIndex = ctx => {
 			? min + 1
 			: curr > max
 				? max
-				: /\W/.test(value[curr - 1])
+				: !isNumber(value[curr - 1])
 					? findNeighborNumberIndex(ctx)
 					: curr
 
@@ -240,13 +301,16 @@ const findNextCharIndex = ctx => {
 export default {
 	isFullValue,
 	isFullEmpty,
+	isNeighborChar,
 	isNeighborEmpty,
-	findAllowedIndex,	
+	findAllowedIndex,
+	isNextExistsNumber,
 	findBackspaceIndex,
 	findFirstEmptyIndex,
 	findLastNumberIndex,
 	findPrevNumberIndex,
 	findPrevAllowedIndex,
 	findNextAllowedIndex,
+	findClosestAllowedIndex,
 	findNextArrowRirghtIndex,
 }

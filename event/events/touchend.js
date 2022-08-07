@@ -2,13 +2,18 @@ export default function (e, h) {
 	const { target } = e
 		,	{ codes, pos } = this
 
+	// Разобраться с мобилой !!
+	pos.start = target.selectionStart
+	e.preventDefault()
+
 	if (!codes.touchmove) {
-		const [start, end] = h.isFullValue(this)
-			? h.findAllowedIndex(this)
-			: h.findFirstEmptyIndex(this)
+		const [start, end] = h.isFullEmpty(this)
+			? [min, min]
+			: h.findClosestAllowedIndex(this)
 	
 		pos.start = start
-		setTimeout(() => target.setSelectionRange(start, end), 50)
+		target.setSelectionRange(start, end)
+		// setTimeout(() => target.setSelectionRange(start, end), 20)
 	}
 
 	codes.touchmove = false

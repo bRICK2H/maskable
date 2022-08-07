@@ -194,8 +194,6 @@ const inputValue = (ctx, value) => {
 const formatTime = (ctx, value) => {
 	const { char } = ctx
 		, separator = getSeparator(char, value)
-		, fValue = value.replace(/\D/g, '').split('')
-		, isEndDay = fValue.length === 4 && fValue.every(n => +n === 0)
 		, timeReg = new RegExp(`[\^${separator}\\d${char}]`, 'g')
 		, charReg = new RegExp(`${char}`, 'g')
 		, [h, m] = value
@@ -203,8 +201,7 @@ const formatTime = (ctx, value) => {
 			.replace(timeReg, '')
 			.split(separator)
 
-	return isEndDay
-		? 1440 : !h && !m ? '' : Number(h) * 60 + Number(m)
+	return !h && !m ? 0 : Number(h) * 60 + Number(m)
 }
 
 export default ({ ctx, value }) => {
