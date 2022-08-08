@@ -31,17 +31,26 @@ const parseValue = (ctx, value) => {
 } 
 
 const inputValue = (ctx, value) => {
-	const { pos: { min, start, end }, prevValue } = ctx
+	const {
+		prevValue,
+		pos: { min, start, end },
+		codes: { backspace, delete: del }
+	} = ctx
 
-	if (end - start > 1) {
+	if (end - start >= 0) {
 		const spliceValue = prevValue
 			.split('')
 			.map((curr, i) => {
 				return i >= min && i >= start && i < end && isNumber(curr)
 					? ctx.char : curr
 			})
-
+		
+		if (!del && !backspace) {
+			spliceValue.splice(start - 1, 1, value[start - 1])
+		}
+		
 		return spliceValue.join('')
+
 	} else {
 		return formatMask(ctx, value)
 	}
@@ -63,7 +72,7 @@ export default ({ ctx, value }) => {
 		isLoad,
 		codes: { past }
 	} = ctx
-
+	
 	const maskValue = past || !isLoad
 		? parseValue(ctx, value)
 		: inputValue(ctx, value)

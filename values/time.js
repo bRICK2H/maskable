@@ -1,6 +1,7 @@
 import isNumber from '../helpers/detail/isNumber'
 import formatMask from '../helpers/mask'
 import getSeparator from '../helpers/detail/separator'
+import setSound from '../helpers/detail/sound'
 
 const arrayFill = (array, n, isArray = false) => {
 	const arr = new Array(n).fill(null)
@@ -46,38 +47,28 @@ const getMaskedTime = (ctx, value) => {
 }
 
 const getValidHours = (ctx, value) => {
-	const { char } = ctx
+	const { pos, prevValue } = ctx
 		, arrayValue = value.split('')
 
-	switch (value.length) {
-		case 0: {
-			const empty = new Array(2).fill(char)
-			empty.forEach(curr => arrayValue.push(curr))
+	ctx.systemIncrement = 0
+
+	if (value.length === 1) {
+		if (value > 2) {
+			ctx.systemIncrement = 1
+			arrayValue.unshift('0')
 		}
-			break
+	} else if (value.length === 2) {
+		const hours = value * 60
 
-		case 1: {
-			const hours = value * 10 * 60
-
-			if (hours === 1440) {
-				arrayValue.fill('0')
-			} else if (hours > 1440) {
-				arrayValue.unshift('0')
-			} else {
-				arrayValue.push(char)
-			}
-		}
-			break
-
-		case 2: {
-			const hours = value * 60
-
-			if (hours === 1440) {
-				arrayValue.fill('0')
-			} else if (hours > 1440) {
-				!(value % 10)
-					? arrayValue.unshift(...arrayValue.splice(1, 1))
-					: arrayValue.splice(0, 1, '0')
+		if (!+prevValue[0] && hours >= 1440) {
+			arrayValue.splice(1, 1, arrayValue.splice(0, 1, '0'))
+		} else {
+			if (hours >= 1440) {
+				const index = pos.start - 1
+				
+				setSound()
+				pos.block = true
+				arrayValue.splice(index, 1, prevValue[index])
 			}
 		}
 	}
@@ -86,32 +77,16 @@ const getValidHours = (ctx, value) => {
 }
 
 const getValidMinutes = (ctx, value) => {
-	const { char } = ctx
+	const { pos, char, prevValue } = ctx
 		, arrayValue = value.split('').slice(0, 2)
+		, separator = getSeparator(char, prevValue)
+		, minutesReg = new RegExp(`[\^${separator}\\d${char}]`, 'g')
+		, [, prevMinutes] = prevValue.replace(minutesReg, '').split(separator)
 
-	switch (value.length) {
-		case 1: {
-			const minutes = value * 10
-
-			if (minutes >= 60) {
-				arrayValue.unshift('0')
-			} else {
-				arrayValue.push(char)
-			}
-		}
-			break
-
-		case 2: {
-			const minutes = +value
-
-			if (minutes === 60) {
-				arrayValue.fill('0')
-			} else if (minutes > 60) {
-				!(value % 10)
-					? arrayValue.unshift(...arrayValue.splice(1, 1))
-					: arrayValue.splice(0, 1, '0')
-			}
-		}
+	if (value >= 60 || +value === 6) {
+		setSound()
+		pos.block = true
+		arrayValue.splice(0, 1, prevMinutes[0])
 	}
 
 	return arrayValue
@@ -127,7 +102,7 @@ const parseString = (ctx, value) => {
 		, [h, m] = value.replace(timeReg, '').split(separator)
 		, side = arrayFill(allowedCharIndices(char, mask), 2, true)
 			.findIndex(curr => curr.includes(start))
-	
+
 	const charReg = new RegExp(`${char}`, 'g')
 		, hArray = [0, -1].includes(side)
 			? getValidHours(ctx, h.replace(charReg, ''))
@@ -172,23 +147,33 @@ const parseValue = (ctx, value, isPast = false) => {
 }
 
 const inputValue = (ctx, value) => {
-	const { codes: { backspace }, pos: { start, end }, prevValue } = ctx
-		, formatedValue = formatMask(ctx, value)
+	const {
+		prevValue,
+		pos: { start, end, min },
+		codes: { backspace, delete: del },
+	} = ctx
+	
+	let formatedValue = formatMask(ctx, value)
 
-	if (end - start > 1) {
+	if (end - start >= 0) {
 		const spliceValue = prevValue
 			.split('')
 			.map((curr, i) => {
-				return i >= start && i < end && isNumber(curr)
+				return i >= min && i >= start && i < end && isNumber(curr)
 					? ctx.char : curr
 			})
 
-		return spliceValue.join('')
-	} else {
-		return backspace
-			? formatedValue
-			: parseValue(ctx, formatedValue)
+		if (!del && !backspace) {
+			spliceValue.splice(start - 1, 1, value[start - 1])
+		}
+
+		formatedValue = spliceValue.join('')
+
 	}
+
+	return backspace
+		? formatedValue
+		: parseValue(ctx, formatedValue)
 }
 
 const formatTime = (ctx, value) => {

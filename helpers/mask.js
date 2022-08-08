@@ -15,12 +15,17 @@ const allowedCharIndices = (char, mask) => {
 
 export default (ctx, value) => {
 	const {
+		pos,
 		mask,
 		char,
 		prevValue,
 		pos: { start, max },
 		codes: { backspace, delete: del },
 	} = ctx
+
+	if (!isNumber(value[start - 1])) {
+		pos.block = true
+	}
 
 	if (!value) {
 		return mask

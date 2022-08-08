@@ -17,6 +17,7 @@ export default class Maskable {
 		this.modified = ''
 		this.prevModified = ''
 		this.validCounter = 0
+		this.systemIncrement = 0
 		this.type = null
 		this.node = null
 		this.isLoad = false
@@ -25,10 +26,12 @@ export default class Maskable {
 			max: 0,
 			end: 0,
 			start: 0,
+			block: false
 		}
 		this.codes = {
 			past: false,
 			shift: false,
+			delete: false,
 			control: false,
 			touchmove: false,
 			backspace: false,

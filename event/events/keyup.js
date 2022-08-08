@@ -1,8 +1,9 @@
 export default function(e) {
-	const { key } = e
-		,	{ codes } = this
+	const { target, key } = e
+		,	{ pos, codes } = this
 
 	codes.past = false
+	pos.end = target.selectionEnd
 	
 	if (key === 'Shift') codes.shift = false
 	if (key === 'Control') codes.control = false

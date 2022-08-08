@@ -8,7 +8,6 @@ const setRange = (ctx, target, h) => {
 	} = ctx
 
 	pos.start = target.selectionStart
-	console.log(value[pos.start - 1])
 
 	const [start, end] = h.isFullEmpty(ctx)
 		? [min, min]

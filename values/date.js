@@ -100,24 +100,18 @@ const validateDate = (ctx, date, prevDate) => {
 		if (string !== prevString && value !== '') {
 			switch (length) {
 				case 2: {
-					console.error('CASE 2', dt[Object.keys(dt)])
-
 					switch (currLength) {
 						case 1: return string === '00' ? `0${min}` : string
 
 						case 2: {
 
 							if (value >= min && value < 10) {
-								console.log('1')
 								// return `0${value}`
 							} else if (string === '0') {
-								console.log('2')
 								return string
 							} else if (value < min) {
-								console.log('3')
 								return `0${min}`
 							} else if (value > max) {
-								console.log('4')
 								return `${max}`
 							}
 
@@ -127,15 +121,12 @@ const validateDate = (ctx, date, prevDate) => {
 					break
 
 				case 4: {
-					console.error('case 4', value)
 				}
 					break
 			}
 
-			console.log('here', value)
 			// return `${value}`
 		} else {
-			console.log("GO NAHUJ")
 			return string
 		}
 
@@ -175,7 +166,7 @@ const validateDate = (ctx, date, prevDate) => {
 	}
 
 	const res = dateModify.map(foo)
-	console.log(res)
+	// console.log(res)
 	return res.reverse()
 	
 }

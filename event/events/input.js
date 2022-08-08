@@ -4,6 +4,7 @@ export default function (e, h) {
 	const { target } = e
 		, { codes, char, pos, pos: { start, max } } = this
 	
+	console.warn(target.selectionStart)
 	pos.start = codes.past
 		? pos.max
 		: target.selectionStart
@@ -12,27 +13,36 @@ export default function (e, h) {
 
 	if (!codes.delete) {
 		if (codes.backspace) {
-			const [s] = h.findBackspaceIndex(this)
+			const [prevIndex] = h.findBackspaceIndex(this)
 
-			pos.start = s
+			pos.start = prevIndex
 		} else {
-			console.log()
-			const [s] = h.findNextAllowedIndex(this, !h.isNextExistsNumber(this))
-			, prevSymbol = target.value[s - 1]
-			, currSymbol = target.value[s]
+			const [nextIndex] = h.findNextAllowedIndex(
+				this,
+				!h.isNextExistsNumber(this) // jump
+			)
+			, prevSymbol = target.value[nextIndex - 1]
+			, currSymbol = target.value[nextIndex]
 
-			pos.start = !isNumber(prevSymbol)
-				&& isNumber(currSymbol)
-				&& prevSymbol !== char
-					? s + 1 : s
+			if (!this.pos.block) {
+				pos.start = !isNumber(prevSymbol)
+					&& isNumber(currSymbol)
+					&& prevSymbol !== char
+						? nextIndex + 1
+						: nextIndex + this.systemIncrement
+			} else {
+				pos.start = start
+			}
 		}
 	} else {
 		pos.start = start >= max
 			? max
 			: pos.start += 1
 
-		const [s] = h.findNextArrowRirghtIndex(this)
+		const [nextIndex] = h.findNextArrowRirghtIndex(this)
+		pos.start = nextIndex
 	}
 
+	this.pos.block = false
 	target.setSelectionRange(pos.start, pos.start)
 }
