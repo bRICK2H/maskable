@@ -1,18 +1,24 @@
+import isNumber from '../../helpers/detail/isNumber'
+
 const setRange = (ctx, target, h) => {
 	const {
 		pos,
+		value,
 		pos: { min, max }
 	} = ctx
 
 	pos.start = target.selectionStart
+	console.log(value[pos.start - 1])
 
 	const [start, end] = h.isFullEmpty(ctx)
 		? [min, min]
 		: h.isNextExistsNumber(ctx)
 			? h.findClosestAllowedIndex(ctx)
-			: pos.start !== max
-				? h.findFirstEmptyIndex(ctx)
-				: [max, max]
+			: pos.start === max
+				? !isNumber(value[pos.start - 1])
+					? h.findFirstEmptyIndex(ctx)
+					: [max, max]
+				: h.findFirstEmptyIndex(ctx)
 
 	pos.start = start
 	target.setSelectionRange(start, end)

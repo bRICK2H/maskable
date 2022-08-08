@@ -275,9 +275,10 @@ const findNextAllowedIndex = (ctx, jump = false) => {
 	} = ctx
 	, currSymbol = value[start - (jump ? 0 : 1)]
 	
-	return !isNumber(currSymbol) && currSymbol !== char
-		? findNextCharIndex(ctx)
-		: [start, start]
+	return !isNumber(currSymbol)
+		&& currSymbol !== char
+			? findNextCharIndex(ctx)
+			: [start, start]
 }
 
 const findNextCharIndex = ctx => {
@@ -290,7 +291,9 @@ const findNextCharIndex = ctx => {
 	const index = value
 		.split('')
 		.findIndex((curr, i) => {
-			return i <= max && i >= start && (curr === char || isNumber(curr)) 
+			return i <= max
+				&& i >= start
+				&& (curr === char || isNumber(curr)) 
 		})
 
 	return index !== -1
