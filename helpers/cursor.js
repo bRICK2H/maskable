@@ -95,21 +95,34 @@ const findFirstEmptyIndex = ctx => {
 		? [index, index] : null
 }
 
-const findLeftArrowSelectIndex = ctx => {
+const findLeftArrowSelectIndex = (ctx, dir, n) => {
 	const { node, value, pos: { min } } = ctx
+	, rEnd = node.selectionEnd
 	, rStart = node.selectionStart
 	, arrayValue = value
 		.split('')
-		.slice(0, rStart)
+		.slice(0, dir === 'right' ? rEnd - 1 : rStart)
 
 	const index = arrayValue.findLastIndex((curr, i) => {
-		if (i > min && isNumber(curr)) {
-			console.log(curr)
-		}
 		return i >= min && isNumber(curr)
 	})
 
-	return index + 1
+	return index + n
+}
+
+const findRightArrowSelectIndex = (ctx, dir, n) => {
+	const { node, value } = ctx
+	, rEnd = node.selectionEnd
+	, rStart = node.selectionStart
+	, minDir = dir === 'right' ? rStart + 1 : rEnd
+	, arrayValue = value
+		.split('')
+
+	const index = arrayValue.findIndex((curr, i) => {
+		return i >= minDir && isNumber(curr)
+	})
+
+	return index - n
 }
 
 const findNeighborNumberIndex = ctx => {
@@ -349,7 +362,8 @@ export default {
 	findPrevAllowedIndex,
 	findNextAllowedIndex,
 	findClosestAllowedIndex,
-	findLeftArrowSelectIndex,
 	findPrevDeletedCharIndex,
 	findNextArrowRirghtIndex,
+	findLeftArrowSelectIndex,
+	findRightArrowSelectIndex,
 }
