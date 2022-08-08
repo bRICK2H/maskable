@@ -4,7 +4,6 @@ export default function (e, h) {
 	const { target } = e
 		, { codes, char, pos, pos: { start, max } } = this
 	
-	console.warn(target.selectionStart)
 	pos.start = codes.past
 		? pos.max
 		: target.selectionStart
