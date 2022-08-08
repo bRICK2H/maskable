@@ -59,16 +59,16 @@ const findClosestAllowedIndex = ctx => {
 	const {
 		char,
 		value,
-		pos: { start }
+		pos: { start, min }
 	} = ctx
-	const prev = start - 1
-		, next = start + 1
-
-	const rec = (prev, next) => {
+	, prev = start - 1
+	, next = start + 1
+	, rec = (prev, next) => {
 		const index = value
 			.split('')
 			.findIndex((curr, i) => {
-				return i >= prev
+				return i >= min
+					&& i >= prev
 					&& i <= next
 					&& (curr === char || isNumber(curr))
 			})

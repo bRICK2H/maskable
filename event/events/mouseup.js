@@ -1,31 +1,33 @@
-import isNumber from '../../helpers/detail/isNumber'
+const setRange = (ctx, target, h) => {
+	const {
+		pos,
+		pos: { min, max }
+	} = ctx
+
+	pos.start = target.selectionStart
+
+	const [start, end] = h.isFullEmpty(ctx)
+		? [min, min]
+		: h.isNextExistsNumber(ctx)
+			? h.findClosestAllowedIndex(ctx)
+			: pos.start !== max
+				? h.findFirstEmptyIndex(ctx)
+				: [max, max]
+
+	pos.start = start
+	target.setSelectionRange(start, end)
+}
 
 export default function (e, h) {
-	const { target, key } = e
-		, { codes, pos, pos: { min, max } } = this
+	const { target } = e
 		
-		codes.past = false
-		pos.start = target.selectionStart
-	
-	if (key === 'Shift') codes.shift = false
-	if (key === 'Control') codes.control = false
-		
-	e.preventDefault()
-
-	if (pos.start === target.selectionEnd) {
-		const [start, end] = h.isFullEmpty(this)
-			? [min, min]
-			: h.findClosestAllowedIndex(this)
-
-		pos.start = start
-		target.setSelectionRange(start, end)
+	if (target.selectionStart === target.selectionEnd) {
+		setRange(this, target, h)
 	} else {
-		if (pos.range) {
-			target.setSelectionRange(pos.start, pos.start)
-			Promise.resolve().then(() => pos.range = false)
-		}
-
-		pos.range = true
+		setTimeout(() => {
+			if (target.selectionStart === target.selectionEnd) {
+				setRange(this, target, h)
+			}
+		})
 	}
-
 }

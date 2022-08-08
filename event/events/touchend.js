@@ -1,20 +1,22 @@
 export default function (e, h) {
 	const { target } = e
-		,	{ codes, pos } = this
+		,	{ codes, pos, pos: { min } } = this
 
-	// Разобраться с мобилой !!
-	pos.start = target.selectionStart
-	e.preventDefault()
+	setTimeout(() => {
+		pos.end = target.selectionEnd
+		pos.start = target.selectionStart
 
-	if (!codes.touchmove) {
-		const [start, end] = h.isFullEmpty(this)
-			? [min, min]
-			: h.findClosestAllowedIndex(this)
+		if (pos.end === pos.start && !codes.touchmove) {
+			const [start] = 
+				h.isFullEmpty(this) || pos.start < min
+					? [min, min]
+					: h.findClosestAllowedIndex(this)
+
+			target.setSelectionRange(start, start)
+			pos.start = start
+		}
+		
+	}, 20)
 	
-		pos.start = start
-		target.setSelectionRange(start, end)
-		// setTimeout(() => target.setSelectionRange(start, end), 20)
-	}
-
 	codes.touchmove = false
 }
