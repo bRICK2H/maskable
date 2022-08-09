@@ -1,7 +1,5 @@
 import Maskable from './index'
 
-let insMaskable = {}
-
 const getMaskOptions = (el, vnode, value) => {
 	return typeof value === 'object'
 		? { ...value, vnode, el }
@@ -15,7 +13,7 @@ export default {
 			bind(el, binding, vnode) {
 				const { value } = binding
 
-				insMaskable = new Maskable(
+				new Maskable(
 					getMaskOptions(el, vnode, value)
 				)
 			}

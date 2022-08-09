@@ -13,7 +13,7 @@ export default vnode => {
 				.replace(/[^\w,]/g, '')
 				.replace(/_/g, '')
 				.split(',')
-				.find(curr => context.hasOwnProperty(curr))
+				.find(curr => curr in context)
 
 		if (rootKey) {
 			const { ctx, key } = refValue(context, rootKey)

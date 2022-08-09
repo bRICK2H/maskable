@@ -157,7 +157,7 @@ export default class Maskable {
 		const maxLen = Math.max(
 			...Object
 				.entries(symbols)
-				.map(([_, arr]) => arr.length)
+				.map(([, arr]) => arr.length)
 		)
 		const charSymbol = Object
 			.entries(symbols)

@@ -63,7 +63,7 @@ const formatPhone = value => {
 		.some(curr => isNumber(curr))
 
 	return isPhone
-		? value.replace(/[^\+7\d]/g, '') : ''
+		? value.replace(/[^+7\d]/g, '') : ''
 }
 
 export default ({ ctx, value }) => {

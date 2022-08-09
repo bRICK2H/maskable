@@ -81,7 +81,7 @@ const getValidMinutes = (ctx, value) => {
 	const { pos, char, prevValue } = ctx
 		, arrayValue = value.split('').slice(0, 2)
 		, separator = getSeparator(char, prevValue)
-		, minutesReg = new RegExp(`[\^${separator}\\d${char}]`, 'g')
+		, minutesReg = new RegExp(`[^${separator}\\d${char}]`, 'g')
 		, [, prevMinutes] = prevValue.replace(minutesReg, '').split(separator)
 		, replaceValue = () => {
 			setSound()
@@ -114,7 +114,7 @@ const parseString = (ctx, value) => {
 	if (!value) return mask
 
 	const separator = getSeparator(char, value)
-		, timeReg = new RegExp(`[\^${separator}\\d${char}]`, 'g')
+		, timeReg = new RegExp(`[^${separator}\\d${char}]`, 'g')
 		, [h, m] = value.replace(timeReg, '').split(separator)
 		, side = arrayFill(allowedCharIndices(char, mask), 2, true)
 			.findIndex(curr => curr.includes(start))
@@ -195,7 +195,7 @@ const inputValue = (ctx, value) => {
 const formatTime = (ctx, value) => {
 	const { char } = ctx
 		, separator = getSeparator(char, value)
-		, timeReg = new RegExp(`[\^${separator}\\d${char}]`, 'g')
+		, timeReg = new RegExp(`[^${separator}\\d${char}]`, 'g')
 		, charReg = new RegExp(`${char}`, 'g')
 		, [h, m] = value
 			.replace(charReg, '0')

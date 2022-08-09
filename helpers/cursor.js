@@ -12,7 +12,7 @@ const isFullEmpty = ctx => {
 		value,
 		pos: { min, max }
 	} = ctx
-	, regEmpty = new RegExp(`[\^${char}\\d]`, 'g')
+	, regEmpty = new RegExp(`[^${char}\\d]`, 'g')
 
 	return value
 		.split('')

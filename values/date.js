@@ -46,7 +46,7 @@ const inputValue = (ctx, value) => {
 	} else {
 		const formatedValue = formatMask(ctx, value)
 			, separator = getSeparator(char, formatedValue)
-			, dateReg = new RegExp(`[\^${separator}\\d${char}]`, 'g')
+			, dateReg = new RegExp(`[^${separator}\\d${char}]`, 'g')
 			, distDate = distributionDate(formatedValue, separator, dateReg)
 			, distPrevDate = distributionDate(ctx.prevValue, separator, dateReg)
 
@@ -65,7 +65,7 @@ const validateDate = (ctx, date, prevDate) => {
 		2: 'day'
 	}
 	, parseNumber = value => !isNaN(parseFloat(value)) ? parseFloat(value) : ''
-	, parseString = (value, char) => !isNaN(parseFloat(value)) ? value.replace(char, '') : ''
+	, parseString = value => !isNaN(parseFloat(value)) ? value.replace(char, '') : ''
 	, dateModify = date.map((curr, i) => {
 		return {
 			[mapDate[i]]: {
@@ -120,9 +120,9 @@ const validateDate = (ctx, date, prevDate) => {
 				}
 					break
 
-				case 4: {
-				}
-					break
+				// case 4: {
+				// }
+				// 	break
 			}
 
 			// return `${value}`
@@ -176,7 +176,7 @@ const distributionDate = (value, separator, pattern) => {
 		.replace(pattern, '')
 		.replace(separator, '.')
 		.split(separator)
-	 , yearIndex = date
+	, yearIndex = date
 		.findIndex(curr => curr.length === 4)
 
 	return yearIndex > 0
@@ -186,7 +186,7 @@ const distributionDate = (value, separator, pattern) => {
 const formatDate = (ctx, value) => {
 	const { char } = ctx
 		, separator = getSeparator(char, value)
-		, dateReg = new RegExp(`[\^\\d${separator}]`, 'g')
+		, dateReg = new RegExp(`[^\\d${separator}]`, 'g')
 		, distDate = distributionDate(value, separator, dateReg)
 		, date = new Date(distDate.join(separator))
 
