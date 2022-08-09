@@ -14,6 +14,9 @@ export default function (e, h) {
 
 			target.setSelectionRange(start, start)
 			pos.start = start
+		} else {
+			const [start, end] = h.findRangeAllowedIndex(this)
+			target.setSelectionRange(start, end)
 		}
 		
 	}, 20)

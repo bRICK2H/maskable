@@ -19,6 +19,7 @@ const setRange = (ctx, target, h) => {
 					: [max, max]
 				: h.findFirstEmptyIndex(ctx)
 
+	pos.end = end
 	pos.start = start
 	target.setSelectionRange(start, end)
 }
@@ -32,6 +33,9 @@ export default function (e, h) {
 		setTimeout(() => {
 			if (target.selectionStart === target.selectionEnd) {
 				setRange(this, target, h)
+			} else {
+				const [start, end] = h.findRangeAllowedIndex(this)
+				target.setSelectionRange(start, end)
 			}
 		})
 	}

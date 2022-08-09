@@ -55,6 +55,38 @@ const isNextExistsNumber = ctx => {
 		})
 }
 
+const findRangeAllowedIndex = ctx => {
+	const {
+		node,
+		value,
+		pos: { min }
+	} = ctx
+	, start = node.selectionStart
+	, end = node.selectionEnd - 1
+	, arrayValue = value.split('')
+	
+	const allowedPrevIndex = arrayValue
+		.findIndex((curr, i) => {
+			return i >= min
+				&& i >= start
+				&& i <= end
+				&& isNumber(curr)
+		})
+	
+	const allowedNextIndex = arrayValue
+		.findLastIndex((curr, i) => {
+			return i >= min
+				&& i >= start
+				&& i <= end
+				&& isNumber(curr)
+		})
+
+	return allowedPrevIndex !== -1
+		&& allowedNextIndex !== -1
+			? [allowedPrevIndex, allowedNextIndex + 1]
+			: findClosestAllowedIndex(ctx)
+}
+
 const findClosestAllowedIndex = ctx => {
 	const {
 		char,
@@ -101,28 +133,44 @@ const findLeftArrowSelectIndex = (ctx, dir, n) => {
 	, rStart = node.selectionStart
 	, arrayValue = value
 		.split('')
-		.slice(0, dir === 'right' ? rEnd - 1 : rStart)
+		.slice(0, dir === 'right' ? rEnd : rStart)
 
 	const index = arrayValue.findLastIndex((curr, i) => {
 		return i >= min && isNumber(curr)
 	})
 
-	return index + n
+	return index !== -1 ? index + n : rEnd
 }
+
+// const findLeftArrowSelectIndex = (ctx, dir, n) => {
+// 	const { node, value, pos: { min } } = ctx
+// 	, rEnd = node.selectionEnd
+// 	, rStart = node.selectionStart
+// 	, arrayValue = value
+// 		.split('')
+// 		.slice(0, dir === 'right' ? rEnd - 1 : rStart)
+
+// 	const index = arrayValue.findLastIndex((curr, i) => {
+// 		return i >= min && isNumber(curr)
+// 	})
+
+// 	return index !== -1 ? index + n : rEnd
+// }
+
 
 const findRightArrowSelectIndex = (ctx, dir, n) => {
 	const { node, value } = ctx
 	, rEnd = node.selectionEnd
 	, rStart = node.selectionStart
-	, minDir = dir === 'right' ? rStart + 1 : rEnd
+	, minIndex = dir === 'right' ? rStart + 1 : rEnd
 	, arrayValue = value
 		.split('')
 
 	const index = arrayValue.findIndex((curr, i) => {
-		return i >= minDir && isNumber(curr)
+		return i >= minIndex && isNumber(curr)
 	})
 
-	return index - n
+	return index !== -1 ? index + n : rStart
 }
 
 const findNeighborNumberIndex = ctx => {
@@ -310,7 +358,7 @@ const findNextOneCharIndex = ctx => {
 	} = ctx
 	, index = value.indexOf(char, start - 1)
 
-	return index !== -1 ? [index, index] : nul
+	return index !== -1 ? [index, index] : null
 	
 }
 
@@ -348,6 +396,23 @@ const findNextCharIndex = ctx => {
 		: [max, max]
 }
 
+const findNextSystemIndex = ctx => {
+	const {
+		char,
+		value,
+		pos: { min }
+	} = ctx
+
+	const index = value
+		.split('')
+		.findIndex((curr, i) => {
+			return i >= min
+				&& curr === char
+		})
+
+	return index
+}
+
 export default {
 	isFullValue,
 	isFullEmpty,
@@ -359,8 +424,10 @@ export default {
 	findFirstEmptyIndex,
 	findLastNumberIndex,
 	findPrevNumberIndex,
+	findNextSystemIndex,
 	findPrevAllowedIndex,
 	findNextAllowedIndex,
+	findRangeAllowedIndex,
 	findClosestAllowedIndex,
 	findPrevDeletedCharIndex,
 	findNextArrowRirghtIndex,

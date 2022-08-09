@@ -68,7 +68,6 @@ export default function (e, h) {
 		} else {
 			const rStart = target.selectionStart
 			, rEnd = target.selectionEnd
-			// console.log(rStart, rEnd)
 
 			if (rStart !== rEnd) {
 				switch (key) {
@@ -84,6 +83,7 @@ export default function (e, h) {
 							target.selectionEnd = pos.end =
 								rEnd < max
 									? h.findLeftArrowSelectIndex(this, 'right', 2)
+									// ? h.findLeftArrowSelectIndex(this, 'right', 1)
 									: max
 						}
 					}
@@ -107,10 +107,9 @@ export default function (e, h) {
 						break
 
 					case 'ArrowUp': {
-						// console.error('asdf', rStart, rEnd)
-						// 	if (rStart <= min) {
-						// 		target.selectionStart = pos.start = min
-						// 	}
+						// if (rStart <= min) {
+						// 	target.selectionStart = pos.start = min
+						// }
 					}
 						break
 				}

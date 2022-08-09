@@ -28,7 +28,9 @@ export default function (e, h) {
 					&& isNumber(currSymbol)
 					&& prevSymbol !== char
 						? nextIndex + 1
-						: nextIndex + this.systemIncrement
+						: this.isSystemIndex
+							? h.findNextSystemIndex(this)
+							: nextIndex
 			} else {
 				pos.start = start
 			}
@@ -42,6 +44,7 @@ export default function (e, h) {
 		pos.start = nextIndex
 	}
 
+	pos.end = pos.start
 	this.pos.block = false
 	target.setSelectionRange(pos.start, pos.start)
 }

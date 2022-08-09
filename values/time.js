@@ -50,11 +50,11 @@ const getValidHours = (ctx, value) => {
 	const { pos, prevValue } = ctx
 		, arrayValue = value.split('')
 
-	ctx.systemIncrement = 0
+	ctx.isSystemIndex = false
 
 	if (value.length === 1) {
 		if (value > 2) {
-			ctx.systemIncrement = 1
+			ctx.isSystemIndex = true
 			arrayValue.unshift('0')
 		}
 	} else if (value.length === 2) {
@@ -82,11 +82,26 @@ const getValidMinutes = (ctx, value) => {
 		, separator = getSeparator(char, prevValue)
 		, minutesReg = new RegExp(`[\^${separator}\\d${char}]`, 'g')
 		, [, prevMinutes] = prevValue.replace(minutesReg, '').split(separator)
+		, replaceValue = () => {
+			setSound()
+			pos.block = true
+			arrayValue.splice(0, 1, prevMinutes[0])
+		}
 
-	if (value >= 60 || +value === 6) {
-		setSound()
-		pos.block = true
-		arrayValue.splice(0, 1, prevMinutes[0])
+	switch (value.length) {
+		case 1: {
+			if (value >= 6) {
+				replaceValue()
+			}
+		}
+			break
+	
+		case 2: {
+			if (value >= 60) {
+				replaceValue()
+			}
+		}
+			break
 	}
 
 	return arrayValue

@@ -1,10 +1,12 @@
-export default function(e) {
+export default function(e, h) {
 	const { target, key } = e
-		,	{ pos, codes } = this
+		,	{ codes } = this
 
 	codes.past = false
-	pos.end = target.selectionEnd
 	
 	if (key === 'Shift') codes.shift = false
 	if (key === 'Control') codes.control = false
+
+	// const [start, end] = h.findRangeAllowedIndex(this)
+	// target.setSelectionRange(start, end)
 }

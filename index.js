@@ -17,7 +17,7 @@ export default class Maskable {
 		this.modified = ''
 		this.prevModified = ''
 		this.validCounter = 0
-		this.systemIncrement = 0
+		this.isSystemIndex = false
 		this.type = null
 		this.node = null
 		this.isLoad = false
@@ -29,6 +29,7 @@ export default class Maskable {
 			block: false
 		}
 		this.codes = {
+			arrow: null,
 			past: false,
 			shift: false,
 			delete: false,
