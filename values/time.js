@@ -61,6 +61,7 @@ const getValidHours = (ctx, value) => {
 		const hours = value * 60
 
 		if (!+prevValue[0] && hours >= 1440) {
+			ctx.isSystemIndex = true
 			arrayValue.splice(1, 1, arrayValue.splice(0, 1, '0'))
 		} else {
 			if (hours >= 1440) {

@@ -64,6 +64,7 @@ export default function (e, h) {
 					break
 			}
 
+			pos.end = pos.start
 			target.setSelectionRange(pos.start, pos.start)
 		} else {
 			const rStart = target.selectionStart
@@ -83,7 +84,6 @@ export default function (e, h) {
 							target.selectionEnd = pos.end =
 								rEnd < max
 									? h.findLeftArrowSelectIndex(this, 'right', 2)
-									// ? h.findLeftArrowSelectIndex(this, 'right', 1)
 									: max
 						}
 					}
