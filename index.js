@@ -93,7 +93,6 @@ export default class Maskable {
 							time += 100
 
 							if (el.value || time >= 500) {
-								console.warn(time)
 								clearInterval(id)
 								resolve()
 							}
