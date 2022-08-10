@@ -10,8 +10,10 @@ export default {
 
 	install(Vue) {
 		Vue.directive('maskable', {
-			bind(el, binding, vnode) {
+			async bind(el, binding, vnode) {
 				const { value } = binding
+
+				if (!value || !value.mask) return
 
 				new Maskable(
 					getMaskOptions(el, vnode, value)

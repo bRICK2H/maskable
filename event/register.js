@@ -1,6 +1,7 @@
 import h from '../helpers/cursor'
 
 const EVENTS = [
+	'focus',
 	'input',
 	'paste',
 	'keyup',

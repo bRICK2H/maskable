@@ -12,7 +12,7 @@ const isFullEmpty = ctx => {
 		value,
 		pos: { min, max }
 	} = ctx
-	, regEmpty = new RegExp(`[^${char}\\d]`, 'g')
+		, regEmpty = new RegExp(`[^${char}\\d]`, 'g')
 
 	return value
 		.split('')
@@ -61,10 +61,10 @@ const findRangeAllowedIndex = ctx => {
 		value,
 		pos: { min }
 	} = ctx
-	, start = node.selectionStart
-	, end = node.selectionEnd - 1
-	, arrayValue = value.split('')
-	
+		, start = node.selectionStart
+		, end = node.selectionEnd - 1
+		, arrayValue = value.split('')
+
 	const allowedPrevIndex = arrayValue
 		.findIndex((curr, i) => {
 			return i >= min
@@ -72,7 +72,7 @@ const findRangeAllowedIndex = ctx => {
 				&& i <= end
 				&& isNumber(curr)
 		})
-	
+
 	const allowedNextIndex = arrayValue
 		.findLastIndex((curr, i) => {
 			return i >= min
@@ -83,8 +83,8 @@ const findRangeAllowedIndex = ctx => {
 
 	return allowedPrevIndex !== -1
 		&& allowedNextIndex !== -1
-			? [allowedPrevIndex, allowedNextIndex + 1]
-			: findClosestAllowedIndex(ctx)
+		? [allowedPrevIndex, allowedNextIndex + 1]
+		: findClosestAllowedIndex(ctx)
 }
 
 const findClosestAllowedIndex = ctx => {
@@ -93,26 +93,26 @@ const findClosestAllowedIndex = ctx => {
 		value,
 		pos: { start, min }
 	} = ctx
-	, prev = start - 1
-	, next = start + 1
-	, rec = (prev, next) => {
-		const index = value
-			.split('')
-			.findIndex((curr, i) => {
-				return i >= min
-					&& i >= prev
-					&& i <= next
-					&& (curr === char || isNumber(curr))
-			})
+		, prev = start - 1
+		, next = start + 1
+		, rec = (prev, next) => {
+			const index = value
+				.split('')
+				.findIndex((curr, i) => {
+					return i >= min
+						&& i >= prev
+						&& i <= next
+						&& (curr === char || isNumber(curr))
+				})
 
-		return index === -1
-			? rec(--prev, ++next)
-			: index === prev
-				? [index + 1, index + 1]
-				: index === next
-					? [index, index]
-					: [start, start]
-	}
+			return index === -1
+				? rec(--prev, ++next)
+				: index === prev
+					? [index + 1, index + 1]
+					: index === next
+						? [index, index]
+						: [start, start]
+		}
 
 	return rec(prev, next)
 }
@@ -121,7 +121,7 @@ const findFirstEmptyIndex = ctx => {
 	const {
 		char, value
 	} = ctx
-	, index = value.indexOf(char)
+		, index = value.indexOf(char)
 
 	return index !== -1
 		? [index, index] : null
@@ -129,11 +129,11 @@ const findFirstEmptyIndex = ctx => {
 
 const findLeftArrowSelectIndex = (ctx, dir, n) => {
 	const { node, value, pos: { min } } = ctx
-	, rEnd = node.selectionEnd
-	, rStart = node.selectionStart
-	, arrayValue = value
-		.split('')
-		.slice(0, dir === 'right' ? rEnd : rStart)
+		, rEnd = node.selectionEnd
+		, rStart = node.selectionStart
+		, arrayValue = value
+			.split('')
+			.slice(0, dir === 'right' ? rEnd : rStart)
 
 	const index = arrayValue.findLastIndex((curr, i) => {
 		return i >= min && isNumber(curr)
@@ -142,29 +142,13 @@ const findLeftArrowSelectIndex = (ctx, dir, n) => {
 	return index !== -1 ? index + n : rEnd
 }
 
-// const findLeftArrowSelectIndex = (ctx, dir, n) => {
-// 	const { node, value, pos: { min } } = ctx
-// 	, rEnd = node.selectionEnd
-// 	, rStart = node.selectionStart
-// 	, arrayValue = value
-// 		.split('')
-// 		.slice(0, dir === 'right' ? rEnd - 1 : rStart)
-
-// 	const index = arrayValue.findLastIndex((curr, i) => {
-// 		return i >= min && isNumber(curr)
-// 	})
-
-// 	return index !== -1 ? index + n : rEnd
-// }
-
-
 const findRightArrowSelectIndex = (ctx, dir, n) => {
 	const { node, value } = ctx
-	, rEnd = node.selectionEnd
-	, rStart = node.selectionStart
-	, minIndex = dir === 'right' ? rStart + 1 : rEnd
-	, arrayValue = value
-		.split('')
+		, rEnd = node.selectionEnd
+		, rStart = node.selectionStart
+		, minIndex = dir === 'right' ? rStart + 1 : rEnd
+		, arrayValue = value
+			.split('')
 
 	const index = arrayValue.findIndex((curr, i) => {
 		return i >= minIndex && isNumber(curr)
@@ -180,26 +164,26 @@ const findNeighborNumberIndex = ctx => {
 		value,
 		pos: { min },
 	} = ctx
-	, arrValue = value.split('')
-	, curr = node.selectionStart
-	, next = arrValue
-		.findIndex((n, i) => {
-			return i >= curr
-				&& (curr === char || isNumber(n))
-		})
-	, prev = arrValue
-		.findLastIndex((n, i) => {
-			return i >= min
-				&& i <= curr
-				&& (curr === char || isNumber(n))
-		})
-	, offsetPrev = curr - prev
-	, offsetNext = next - curr
+		, arrValue = value.split('')
+		, curr = node.selectionStart
+		, next = arrValue
+			.findIndex((n, i) => {
+				return i >= curr
+					&& (curr === char || isNumber(n))
+			})
+		, prev = arrValue
+			.findLastIndex((n, i) => {
+				return i >= min
+					&& i <= curr
+					&& (curr === char || isNumber(n))
+			})
+		, offsetPrev = curr - prev
+		, offsetNext = next - curr
 
 	return offsetPrev < offsetNext
 		|| offsetPrev === offsetNext
-			? prev + 1
-			: next
+		? prev + 1
+		: next
 }
 
 const findAllowedIndex = ctx => {
@@ -208,8 +192,8 @@ const findAllowedIndex = ctx => {
 		value,
 		pos: { min, max },
 	} = ctx
-	, 	curr = node.selectionStart
-	, 	index = curr < min
+		, curr = node.selectionStart
+		, index = curr < min
 			? min + 1
 			: curr > max
 				? max
@@ -224,13 +208,13 @@ const findLastNumberIndex = ctx => {
 	const { char, value, pos: { max } } = ctx
 
 	const arrayValue = value.split('')
-	, numIndex = arrayValue.findLastIndex(curr => isNumber(curr))
-	, symIndex = arrayValue.findIndex(curr => curr === char)
-	, index = symIndex !== -1
-		? symIndex
-		: numIndex !== -1
-			? numIndex + 1
-			: max
+		, numIndex = arrayValue.findLastIndex(curr => isNumber(curr))
+		, symIndex = arrayValue.findIndex(curr => curr === char)
+		, index = symIndex !== -1
+			? symIndex
+			: numIndex !== -1
+				? numIndex + 1
+				: max
 
 	return index
 }
@@ -250,7 +234,7 @@ const findPrevNumberIndex = ctx => {
 			.findLastIndex((curr, i) => {
 				return i >= min && i <= start && isNumber(curr)
 			})
-	
+
 		return index !== -1 ? [index + 1, index + 1] : null
 	}
 }
@@ -261,13 +245,13 @@ const findBackspaceIndex = ctx => {
 		value,
 		pos: { start },
 	} = ctx
-	, currSymbol = value[start]
-	, prevSymbol = value[start - 1]
+		, currSymbol = value[start]
+		, prevSymbol = value[start - 1]
 
 	return currSymbol === char
 		&& (!isNumber(prevSymbol) && prevSymbol !== char)
-			? [start, start]
-			: findPrevBackspaceIndex(ctx)
+		? [start, start]
+		: findPrevBackspaceIndex(ctx)
 }
 
 const findPrevBackspaceIndex = ctx => {
@@ -293,7 +277,7 @@ const findPrevAllowedIndex = (ctx) => {
 		value,
 		pos: { start },
 	} = ctx
-	, currSymbol = value[start]
+		, currSymbol = value[start]
 
 	return !isNumber(currSymbol) && currSymbol !== char
 		? findPrevCharIndex(ctx) : [start, start]
@@ -356,10 +340,10 @@ const findNextOneCharIndex = ctx => {
 		value,
 		pos: { start }
 	} = ctx
-	, index = value.indexOf(char, start - 1)
+		, index = value.indexOf(char, start - 1)
 
 	return index !== -1 ? [index, index] : null
-	
+
 }
 
 const findNextAllowedIndex = (ctx, jump = false) => {
@@ -368,12 +352,12 @@ const findNextAllowedIndex = (ctx, jump = false) => {
 		value,
 		pos: { start },
 	} = ctx
-	, currSymbol = value[start - (jump ? 0 : 1)]
-	
+		, currSymbol = value[start - (jump ? 0 : 1)]
+
 	return !isNumber(currSymbol)
 		&& currSymbol !== char
-			? findNextCharIndex(ctx)
-			: [start, start]
+		? findNextCharIndex(ctx)
+		: [start, start]
 }
 
 const findNextCharIndex = ctx => {
@@ -388,7 +372,7 @@ const findNextCharIndex = ctx => {
 		.findIndex((curr, i) => {
 			return i <= max
 				&& i >= start
-				&& (curr === char || isNumber(curr)) 
+				&& (curr === char || isNumber(curr))
 		})
 
 	return index !== -1

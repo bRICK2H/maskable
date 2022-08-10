@@ -5,9 +5,9 @@ import eventRegister from './event/register'
 import getRefContentValue from './helpers/vue/refContentValue'
 
 export default class Maskable {
-	constructor (options = {}) {
+	constructor(options = {}) {
 		const { el } = options
-		
+
 		this.mask = ''
 		this.char = '_'
 		this.value = ''
@@ -46,7 +46,7 @@ export default class Maskable {
 	set _validCounter(value) {
 		this.validCounter = value
 	}
-	
+
 	get _validCounter() {
 		return this.validCounter
 	}
@@ -63,12 +63,13 @@ export default class Maskable {
 	 * Инициализация плагина
 	 * @param { Object } options 
 	 */
-	init(options) {
+	async init(options) {
 		const {
 			el = null,
 			mask = '',
 			char = '_',
 			vnode = {},
+			browserAwait = false,
 			isModified = true
 		} = options
 
@@ -80,8 +81,26 @@ export default class Maskable {
 			const {
 				ctx, key
 			} = this.vueRefContentValue
-			
-			el.value = ctx[key]
+
+			if (ctx[key]) {
+				el.value = ctx[key]
+			} else {
+				if (browserAwait) {
+					await new Promise(resolve => {
+						let time = 0
+
+						const id = setInterval(() => {
+							time += 100
+
+							if (el.value || time >= 500) {
+								console.warn(time)
+								clearInterval(id)
+								resolve()
+							}
+						}, 100)
+					})
+				}
+			}
 		}
 
 		if (!this.node) {
@@ -201,7 +220,7 @@ export default class Maskable {
 		this.prevValue = this._value
 
 		const { type } = this
-		, options = { ctx: this, value }
+			, options = { ctx: this, value }
 
 		switch (type) {
 
@@ -210,7 +229,7 @@ export default class Maskable {
 
 			case 8: setDate(options)
 				break
-			
+
 			case 10: setPhone(options)
 				break
 
@@ -236,5 +255,5 @@ export default class Maskable {
 
 		this.isLoad = true
 	}
-	
+
 }
