@@ -1,9 +1,7 @@
-import h from './helpers/cursor'
 import setTime from './values/time'
 import setDate from './values/date'
 import setPhone from './values/phone'
 import eventRegister from './event/register'
-import eventFocus from './event/events/focus'
 import getRefContentValue from './helpers/vue/refContentValue'
 
 export default class Maskable {
@@ -67,7 +65,6 @@ export default class Maskable {
 	 * @param { Object } options 
 	 */
 	async init(options) {
-		console.log('init')
 		const {
 			el = null,
 			mask = '',
@@ -91,7 +88,6 @@ export default class Maskable {
 			} else {
 				if (awaitFocus) {
 					const listener = r => r(true)
-
 					el.placeholder = mask
 					await new Promise(r => el.addEventListener('focus', () => listener(r)))
 				}
