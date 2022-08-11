@@ -1,15 +1,25 @@
 export default function (e, h) {
 	const { target } = e
-		,	{ codes, pos } = this
+		,	{ codes, pos, pos: { min } } = this
 
-	if (!codes.touchmove) {
-		const [start, end] = h.isFullValue(this)
-			? h.findAllowedIndex(this)
-			: h.findFirstEmptyIndex(this)
+	setTimeout(() => {
+		pos.end = target.selectionEnd
+		pos.start = target.selectionStart
+
+		if (pos.end === pos.start && !codes.touchmove) {
+			const [start] = 
+				h.isFullEmpty(this) || pos.start < min
+					? [min, min]
+					: h.findClosestAllowedIndex(this)
+
+			target.setSelectionRange(start, start)
+			pos.start = start
+		} else {
+			const [start, end] = h.findRangeAllowedIndex(this)
+			target.setSelectionRange(start, end)
+		}
+		
+	}, 20)
 	
-		pos.start = start
-		setTimeout(() => target.setSelectionRange(start, end), 50)
-	}
-
 	codes.touchmove = false
 }

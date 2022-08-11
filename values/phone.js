@@ -31,27 +31,39 @@ const parseValue = (ctx, value) => {
 } 
 
 const inputValue = (ctx, value) => {
-	const { pos: { min, start, end }, prevValue } = ctx
+	const {
+		prevValue,
+		pos: { min, start, end },
+		codes: { backspace, delete: del }
+	} = ctx
 
-	if (end - start > 1) {
+	if (end - start >= 0) {
 		const spliceValue = prevValue
 			.split('')
 			.map((curr, i) => {
 				return i >= min && i >= start && i < end && isNumber(curr)
 					? ctx.char : curr
 			})
-
+		
+		if (!del && !backspace) {
+			spliceValue.splice(start - 1, 1, value[start - 1])
+		}
+		
 		return spliceValue.join('')
+
 	} else {
 		return formatMask(ctx, value)
 	}
 }
 
 const formatPhone = value => {
-	// return value.replace(/[^\+7\d]/g, '')
-	return +value
-		.replace(/\+7/, '8')
-		.replace(/\D/g, '')
+	const isPhone = value
+		.replace(/\+7/, '')
+		.split('')
+		.some(curr => isNumber(curr))
+
+	return isPhone
+		? value.replace(/[^+7\d]/g, '') : ''
 }
 
 export default ({ ctx, value }) => {
@@ -60,7 +72,7 @@ export default ({ ctx, value }) => {
 		isLoad,
 		codes: { past }
 	} = ctx
-
+	
 	const maskValue = past || !isLoad
 		? parseValue(ctx, value)
 		: inputValue(ctx, value)

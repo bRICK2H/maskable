@@ -1,20 +1,26 @@
-import eventRegister from './event/register'
+import h from './helpers/cursor'
 import setTime from './values/time'
 import setDate from './values/date'
 import setPhone from './values/phone'
+import eventRegister from './event/register'
+import eventFocus from './event/events/focus'
+import getRefContentValue from './helpers/vue/refContentValue'
 
 export default class Maskable {
-	constructor (options = {}) {
+	constructor(options = {}) {
 		const { el } = options
-		
+
 		this.mask = ''
 		this.char = '_'
 		this.value = ''
 		this.prevValue = ''
 		this.pastValue = ''
+		this.vueRefContentValue = null
 		this.modified = ''
 		this.prevModified = ''
 		this.validCounter = 0
+		this.isSystemIndex = false
+		this.isTargetFocus = false
 		this.type = null
 		this.node = null
 		this.isLoad = false
@@ -23,11 +29,13 @@ export default class Maskable {
 			max: 0,
 			end: 0,
 			start: 0,
-			range: false
+			block: false
 		}
 		this.codes = {
+			arrow: null,
 			past: false,
 			shift: false,
+			delete: false,
 			control: false,
 			touchmove: false,
 			backspace: false,
@@ -41,7 +49,7 @@ export default class Maskable {
 	set _validCounter(value) {
 		this.validCounter = value
 	}
-	
+
 	get _validCounter() {
 		return this.validCounter
 	}
@@ -58,14 +66,37 @@ export default class Maskable {
 	 * Инициализация плагина
 	 * @param { Object } options 
 	 */
-	init(options) {
+	async init(options) {
+		console.log('init')
 		const {
 			el = null,
 			mask = '',
 			char = '_',
+			vnode = {},
+			awaitFocus = false,
+			isModified = true
 		} = options
 
+		this.isModified = isModified
 		this.node = this.getInputNode(el)
+		this.vueRefContentValue = getRefContentValue(vnode)
+
+		if (this.vueRefContentValue) {
+			const {
+				ctx, key
+			} = this.vueRefContentValue
+
+			if (ctx[key]) {
+				el.value = ctx[key]
+			} else {
+				if (awaitFocus) {
+					const listener = r => r(true)
+
+					el.placeholder = mask
+					await new Promise(r => el.addEventListener('focus', () => listener(r)))
+				}
+			}
+		}
 
 		if (!this.node) {
 			console.warn('[Maskable]: Элемент узла не найден.')
@@ -140,7 +171,7 @@ export default class Maskable {
 		const maxLen = Math.max(
 			...Object
 				.entries(symbols)
-				.map(([_, arr]) => arr.length)
+				.map(([, arr]) => arr.length)
 		)
 		const charSymbol = Object
 			.entries(symbols)
@@ -181,24 +212,43 @@ export default class Maskable {
 	 */
 
 	setValue(value) {
-		this.prevValue = this.value
+		this.prevValue = this._value
 
 		const { type } = this
-		, options = { ctx: this, value }
+			, options = { ctx: this, value }
 
 		switch (type) {
+
 			case 4: setTime(options)
 				break
 
 			case 8: setDate(options)
 				break
-			
+
 			case 10: setPhone(options)
 				break
 
 		}
 
+		if (this.vueRefContentValue) {
+			const {
+				ctx,
+				key,
+				rootCtx,
+				rootKey,
+				rootValue
+			} = this.vueRefContentValue
+
+			ctx[key] = this.isModified
+				? this._modified
+				: this._value
+
+			if (typeof rootValue === 'object' && rootValue !== null) {
+				rootCtx[rootKey] = JSON.parse(JSON.stringify(rootValue))
+			}
+		}
+
 		this.isLoad = true
 	}
-	
+
 }

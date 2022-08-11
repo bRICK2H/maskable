@@ -1,35 +1,50 @@
-export default function (e, h, isCapture) {
+import isNumber from '../../helpers/detail/isNumber'
+
+export default function (e, h) {
 	const { target } = e
-		, 	{ codes, pos, pos: { start, max } } = this
+		, { codes, char, pos, pos: { start, max } } = this
+	
+	pos.start = codes.past
+		? pos.max
+		: target.selectionStart
 
-	if (isCapture) {
-		pos.start = codes.past
-			? pos.max
-			: target.selectionStart
-		
-		this.setValue(target.value)
-		target.value = this.modified
-	} else {
-		if (this.modified === this.prevModified) {
-			target.value = this.value
-		}
-		
-		if (!codes.delete) {
-			const [s] = codes.backspace
-				? h.findBackspaceIndex(this)
-				: h.findNextAllowedIndex(this, true)
-				
-			pos.start = !codes.backspace
-				? h.findLastNumberIndex(this) : s
+	this.setValue(target.value)
+
+	if (!codes.delete) {
+		if (codes.backspace) {
+			const [prevIndex] = h.findBackspaceIndex(this)
+
+			pos.start = prevIndex
 		} else {
-			pos.start = start >= max
-				? max
-				: pos.start += 1
+			const [nextIndex] = h.findNextAllowedIndex(
+				this,
+				!h.isNextExistsNumber(this) // jump
+			)
+			, prevSymbol = target.value[nextIndex - 1]
+			, currSymbol = target.value[nextIndex]
 
-			const [s] = h.findNextArrowRirghtIndex(this)
-			pos.start = s
+			if (!this.pos.block) {
+				pos.start = !isNumber(prevSymbol)
+					&& isNumber(currSymbol)
+					&& prevSymbol !== char
+						? nextIndex + 1
+						: this.isSystemIndex
+							? h.findNextSystemIndex(this)
+							: nextIndex
+			} else {
+				pos.start = start
+			}
 		}
-		
-		target.setSelectionRange(pos.start, pos.start)
+	} else {
+		pos.start = start >= max
+			? max
+			: pos.start += 1
+
+		const [nextIndex] = h.findNextArrowRirghtIndex(this)
+		pos.start = nextIndex
 	}
+
+	pos.end = pos.start
+	this.pos.block = false
+	target.setSelectionRange(pos.start, pos.start)
 }

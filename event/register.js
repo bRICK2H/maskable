@@ -1,6 +1,7 @@
-import runEvents from './run'
+import h from '../helpers/cursor'
 
 const EVENTS = [
+	'focus',
 	'input',
 	'paste',
 	'keyup',
@@ -12,18 +13,12 @@ const EVENTS = [
 
 export default ctx => {
 	const { node } = ctx
-		, 	bubblingListener = runEvents.bind(ctx, false)
-		, 	capturingListener = runEvents.bind(ctx, true)
 
 	for (const event of EVENTS) {
-		if (event === 'input') {
-			// Регистрация input при погружении
-			node.addEventListener(event, capturingListener, { capture: true })
-			// Регистрация input при всплытии
-			node.addEventListener(event, bubblingListener)
-		} else {
-			// Регистрация событий при всплытии
-			node.addEventListener(event, bubblingListener)
-		}
+		const {
+			default: listener
+		} = require(`./events/${event}.js`)
+
+		node.addEventListener(event, e => listener.call(ctx, e, h))
 	}
 }
