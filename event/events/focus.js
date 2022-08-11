@@ -1,6 +1,6 @@
 export default function (e, h) {
 	const { target } = e
-		, { pos: { min, max } } = this
+		, { pos, pos: { min, max } } = this
 
 	const [start] = h.isFullEmpty(this)
 		? [min]
@@ -8,5 +8,6 @@ export default function (e, h) {
 			? [max]
 			: h.findFirstEmptyIndex(this)
 
+	pos.start = pos.end = start
 	target.setSelectionRange(start, start)
 }

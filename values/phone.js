@@ -1,3 +1,4 @@
+import h from '../helpers/cursor'
 import formatMask from '../helpers/mask'
 import isNumber from '../helpers/detail/isNumber'
 
@@ -28,27 +29,29 @@ const parseValue = (ctx, value) => {
 			return el
 		})
 		.join('')
-} 
+}
 
 const inputValue = (ctx, value) => {
 	const {
 		prevValue,
-		pos: { min, start, end },
+		pos: { min, max, start, end },
 		codes: { backspace, delete: del }
 	} = ctx
 
-	if (end - start >= 0) {
+	const isIgnoreFullValue = h.isFullValue(ctx) && start === max
+
+	if (end - start >= 0 && !isIgnoreFullValue) {
 		const spliceValue = prevValue
 			.split('')
 			.map((curr, i) => {
 				return i >= min && i >= start && i < end && isNumber(curr)
 					? ctx.char : curr
 			})
-		
+
 		if (!del && !backspace) {
 			spliceValue.splice(start - 1, 1, value[start - 1])
 		}
-		
+
 		return spliceValue.join('')
 
 	} else {
@@ -72,13 +75,13 @@ export default ({ ctx, value }) => {
 		isLoad,
 		codes: { past }
 	} = ctx
-	
+
 	const maskValue = past || !isLoad
 		? parseValue(ctx, value)
 		: inputValue(ctx, value)
-	,	modifyValue = formatPhone(maskValue)
+		, modifyValue = formatPhone(maskValue)
 
 	node.value =
-	ctx.value = maskValue
+		ctx.value = maskValue
 	ctx.modified = modifyValue
 }
