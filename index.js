@@ -1,7 +1,9 @@
+import h from './helpers/cursor'
 import setTime from './values/time'
 import setDate from './values/date'
 import setPhone from './values/phone'
 import eventRegister from './event/register'
+import eventFocus from './event/events/focus'
 import getRefContentValue from './helpers/vue/refContentValue'
 
 export default class Maskable {
@@ -18,6 +20,7 @@ export default class Maskable {
 		this.prevModified = ''
 		this.validCounter = 0
 		this.isSystemIndex = false
+		this.isTargetFocus = false
 		this.type = null
 		this.node = null
 		this.isLoad = false
@@ -64,12 +67,13 @@ export default class Maskable {
 	 * @param { Object } options 
 	 */
 	async init(options) {
+		console.log('init')
 		const {
 			el = null,
 			mask = '',
 			char = '_',
 			vnode = {},
-			browserAwait = false,
+			awaitFocus = false,
 			isModified = true
 		} = options
 
@@ -85,19 +89,11 @@ export default class Maskable {
 			if (ctx[key]) {
 				el.value = ctx[key]
 			} else {
-				if (browserAwait) {
-					await new Promise(resolve => {
-						let time = 0
+				if (awaitFocus) {
+					const listener = r => r(true)
 
-						const id = setInterval(() => {
-							time += 100
-
-							if (el.value || time >= 500) {
-								clearInterval(id)
-								resolve()
-							}
-						}, 100)
-					})
+					el.placeholder = mask
+					await new Promise(r => el.addEventListener('focus', () => listener(r)))
 				}
 			}
 		}
