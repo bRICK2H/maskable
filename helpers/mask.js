@@ -19,7 +19,7 @@ export default (ctx, value) => {
 		mask,
 		char,
 		prevValue,
-		pos: { start, max },
+		pos: { start, min, max, select },
 		codes: { backspace, delete: del },
 	} = ctx
 
@@ -31,30 +31,56 @@ export default (ctx, value) => {
 		return mask
 	} else {
 		const arrayValue = value.split('')
-			,	validIndex = allowedCharIndices(char, mask)
+
+		if (select.isSelect) {
+			const {
+				end,
+				start,
+			} = select
+
+			const modifyPrevValue = prevValue
+				.split('')
+				.map((curr, i) => {
+					return i >= min && i >= start && i < end && isNumber(curr)
+						? ctx.char : curr
+				})
+
+			if (!backspace && !del) {
+				if (!isNumber(value[start])) {
+					Object.assign(arrayValue, prevValue.split(''))
+				} else {
+					modifyPrevValue.splice(start, 1, value[start])
+					Object.assign(arrayValue, modifyPrevValue)
+				}
+			}
+			
+		} else {
+			const validIndex = allowedCharIndices(char, mask)
 				.findIndex(n => n === start)
 
-		if (backspace || del) {
-			ctx._validCounter = 0
-
-			isNumber(prevValue[start])
-				? arrayValue.splice(start, 0, char)
-				: arrayValue.splice(start, 0, prevValue[start])
-		} else {
-			ctx._validCounter = validIndex !== -1 || start >= max ? 0 : 1
-			
-			if (!isNumber(arrayValue[start - 1])) {
-				arrayValue.splice(start - 1, 1, ...arrayValue.splice(start, 1))
+			if (backspace || del) {
+				ctx._validCounter = 0
+	
+				isNumber(prevValue[start])
+					? arrayValue.splice(start, 0, char)
+					: arrayValue.splice(start, 0, prevValue[start])
 			} else {
-				if (validIndex !== -1) {
-					arrayValue.splice(start, 1)
+				ctx._validCounter = validIndex !== -1 || start >= max ? 0 : 1
+	
+				if (!isNumber(arrayValue[start - 1])) {
+					arrayValue.splice(start - 1, 1, ...arrayValue.splice(start, 1))
 				} else {
-					const [s] = h.findNextAllowedIndex(ctx, true)
-
-					arrayValue.splice(s, 1, ...arrayValue.splice(start - 1, 1))
+					if (validIndex !== -1) {
+						arrayValue.splice(start, 1)
+					} else {
+						const [s] = h.findNextAllowedIndex(ctx, true)
+	
+						arrayValue.splice(s, 1, ...arrayValue.splice(start - 1, 1))
+					}
 				}
 			}
 		}
+		
 		
 		return mask.split('')
 			.map((curr, i) => isNumber(arrayValue[i]) ? arrayValue[i] : curr)

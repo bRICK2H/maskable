@@ -27,7 +27,12 @@ export default class Maskable {
 			max: 0,
 			end: 0,
 			start: 0,
-			block: false
+			block: false,
+			select: {
+				end: 0,
+				start: 0,
+				isSelect: false
+			}
 		}
 		this.codes = {
 			arrow: null,
