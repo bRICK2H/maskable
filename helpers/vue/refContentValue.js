@@ -3,16 +3,15 @@ export default vnode => {
 		, directive = data?.directives.find(curr => curr.name === 'maskable')
 
 	if (directive) {
-		const { expression } = directive
+		const { value } = directive
+			, ignored = ['mask', 'char', 'isModified', 'awaitFocus']
 			, refValue = (ctx, key) => {
 				return typeof ctx[key] === 'object'
 					? refValue(ctx[key], String(Object.keys(ctx[key])))
 					: { ctx, key }
 			}
-			, rootKey = expression
-				.replace(/[^\w,]/g, '')
-				.replace(/_/g, '')
-				.split(',')
+			, rootKey = Object.keys(value)
+				.filter(curr => !ignored.includes(curr))
 				.find(curr => curr in context)
 
 		if (rootKey) {

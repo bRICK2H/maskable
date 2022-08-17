@@ -28,32 +28,6 @@ const parseValue = (ctx, value) => {
 			return el
 		})
 		.join('')
-} 
-
-const inputValue = (ctx, value) => {
-	const {
-		prevValue,
-		pos: { min, start, end },
-		codes: { backspace, delete: del }
-	} = ctx
-
-	if (end - start >= 0) {
-		const spliceValue = prevValue
-			.split('')
-			.map((curr, i) => {
-				return i >= min && i >= start && i < end && isNumber(curr)
-					? ctx.char : curr
-			})
-		
-		if (!del && !backspace) {
-			spliceValue.splice(start - 1, 1, value[start - 1])
-		}
-		
-		return spliceValue.join('')
-
-	} else {
-		return formatMask(ctx, value)
-	}
 }
 
 const formatPhone = value => {
@@ -70,15 +44,15 @@ export default ({ ctx, value }) => {
 	const {
 		node,
 		isLoad,
-		codes: { past }
+		codes: { past, which }
 	} = ctx
-	
-	const maskValue = past || !isLoad
+
+	const maskValue = past || !isLoad || !which
 		? parseValue(ctx, value)
-		: inputValue(ctx, value)
-	,	modifyValue = formatPhone(maskValue)
+		: formatMask(ctx, value)
+	, modifyValue = formatPhone(maskValue)
 
 	node.value =
-	ctx.value = maskValue
+		ctx.value = maskValue
 	ctx.modified = modifyValue
 }

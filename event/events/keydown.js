@@ -1,20 +1,30 @@
 import isNumber from "../../helpers/detail/isNumber"
 
 export default function (e, h) {
-	const { target, code, key } = e
-		, {
-			pos,
-			codes,
-			pos: { start, min, max }
-		} = this
-		, arrows = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown']
-		, directionSelect = target.selectionDirection
+	const { 
+		key,
+		code,
+		which,
+		target,
+		keyCode,
+	} = e
+	, {
+		pos,
+		codes,
+		pos: { start, min, max }
+	} = this
+	, arrows = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown']
+	, directionSelect = target.selectionDirection
 
 	if (key === 'Shift') codes.shift = true
 	if (key === 'Control') codes.control = true
-	
+
+	codes.which = which
 	codes.delete = code === 'Delete'
 	codes.backspace = code === 'Backspace'
+		|| key === 'Backspace'
+		|| keyCode === 8
+		|| which === 8
 	
 	if (code === 'KeyZ' && codes.control) {
 		e.preventDefault()

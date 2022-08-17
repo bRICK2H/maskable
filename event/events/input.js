@@ -4,6 +4,7 @@ export default function (e, h) {
 	const { target } = e
 		, { codes, char, pos, pos: { start, max } } = this
 	
+	pos.end = target.selectionEnd
 	pos.start = codes.past
 		? pos.max
 		: target.selectionStart
@@ -32,7 +33,11 @@ export default function (e, h) {
 							? h.findNextSystemIndex(this)
 							: nextIndex
 			} else {
-				pos.start = start
+				const {
+					pos: { select }
+				} = this
+				
+				pos.start = select.isSelect ? select.start : start
 			}
 		}
 	} else {
@@ -46,5 +51,6 @@ export default function (e, h) {
 
 	pos.end = pos.start
 	this.pos.block = false
+	
 	target.setSelectionRange(pos.start, pos.start)
 }

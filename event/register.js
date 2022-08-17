@@ -5,6 +5,7 @@ const EVENTS = [
 	'input',
 	'paste',
 	'keyup',
+	'select',
 	'keydown',
 	'mouseup',
 	'touchend',

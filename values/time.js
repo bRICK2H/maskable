@@ -163,33 +163,12 @@ const parseValue = (ctx, value, isPast = false) => {
 }
 
 const inputValue = (ctx, value) => {
-	const {
-		prevValue,
-		pos: { start, end, min },
-		codes: { backspace, delete: del },
-	} = ctx
-	
-	let formatedValue = formatMask(ctx, value)
-
-	if (end - start >= 0) {
-		const spliceValue = prevValue
-			.split('')
-			.map((curr, i) => {
-				return i >= min && i >= start && i < end && isNumber(curr)
-					? ctx.char : curr
-			})
-
-		if (!del && !backspace) {
-			spliceValue.splice(start - 1, 1, value[start - 1])
-		}
-
-		formatedValue = spliceValue.join('')
-
-	}
+	const { codes: { backspace } } = ctx
+	, formatValue = formatMask(ctx, value)
 
 	return backspace
-		? formatedValue
-		: parseValue(ctx, formatedValue)
+		? formatValue
+		: parseValue(ctx, formatValue)
 }
 
 const formatTime = (ctx, value) => {
@@ -215,6 +194,7 @@ export default ({ ctx, value }) => {
 	const maskValue = past || !isLoad
 		? parseValue(ctx, value, past)
 		: inputValue(ctx, value)
+		// formatMask(ctx, value)
 	, modifyValue = formatTime(ctx, maskValue)
 
 	node.value =
