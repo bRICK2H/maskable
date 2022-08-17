@@ -73,10 +73,10 @@ export default ({ ctx, value }) => {
 	const {
 		node,
 		isLoad,
-		codes: { past }
+		codes: { past, which }
 	} = ctx
 
-	const maskValue = past || !isLoad
+	const maskValue = past || !isLoad || !which
 		? parseValue(ctx, value)
 		: inputValue(ctx, value)
 		, modifyValue = formatPhone(maskValue)

@@ -42,12 +42,17 @@ export default (ctx, value) => {
 				: arrayValue.splice(start, 0, prevValue[start])
 		} else {
 			ctx._validCounter = validIndex !== -1 || start >= max ? 0 : 1
-
-			if (validIndex !== -1) {
-				arrayValue.splice(start, 1)
+			
+			if (!isNumber(arrayValue[start - 1])) {
+				arrayValue.splice(start - 1, 1, ...arrayValue.splice(start, 1))
 			} else {
-				const [s] = h.findNextAllowedIndex(ctx, true)
-				arrayValue.splice(s, 1, ...arrayValue.splice(start - 1, 1))
+				if (validIndex !== -1) {
+					arrayValue.splice(start, 1)
+				} else {
+					const [s] = h.findNextAllowedIndex(ctx, true)
+
+					arrayValue.splice(s, 1, ...arrayValue.splice(start - 1, 1))
+				}
 			}
 		}
 		

@@ -35,6 +35,7 @@ export default class Maskable {
 			shift: false,
 			delete: false,
 			control: false,
+			which: undefined,
 			touchmove: false,
 			backspace: false,
 		}
