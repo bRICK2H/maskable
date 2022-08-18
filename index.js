@@ -13,15 +13,18 @@ export default class Maskable {
 		this.value = ''
 		this.prevValue = ''
 		this.pastValue = ''
-		this.vueRefContentValue = null
 		this.modified = ''
 		this.prevModified = ''
 		this.validCounter = 0
-		this.isSystemIndex = false
-		this.isTargetFocus = false
+		
 		this.type = null
 		this.node = null
 		this.isLoad = false
+		this.mouseEvent = null
+		this.isTargetFocus = false
+		this.isSystemIndex = false
+		this.vueRefContentValue = null
+
 		this.pos = {
 			min: 0,
 			max: 0,

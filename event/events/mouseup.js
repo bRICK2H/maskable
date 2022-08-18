@@ -26,7 +26,7 @@ const setRange = (ctx, target, h) => {
 
 export default function (e, h) {
 	const { target } = e
-		
+	
 	if (target.selectionStart === target.selectionEnd) {
 		setRange(this, target, h)
 	} else {

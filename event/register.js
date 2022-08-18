@@ -1,4 +1,5 @@
 import h from '../helpers/cursor'
+import mouseup from './events/mouseup'
 
 const EVENTS = [
 	'focus',
@@ -10,6 +11,7 @@ const EVENTS = [
 	'mouseup',
 	'touchend',
 	'touchmove',
+	'mousedown',
 ]
 
 export default ctx => {
@@ -22,4 +24,11 @@ export default ctx => {
 
 		node.addEventListener(event, e => listener.call(ctx, e, h))
 	}
+
+	document.addEventListener('mouseup', () => {
+		const { mouseEvent } = ctx
+		
+		if (mouseEvent) mouseup.call(ctx, mouseEvent, h)
+		ctx.mouseEvent = null
+	})
 }

@@ -83,8 +83,8 @@ const findRangeAllowedIndex = ctx => {
 
 	return allowedPrevIndex !== -1
 		&& allowedNextIndex !== -1
-		? [allowedPrevIndex, allowedNextIndex + 1]
-		: findClosestAllowedIndex(ctx)
+			? [allowedPrevIndex, allowedNextIndex + 1]
+			: findClosestAllowedIndex(ctx)
 }
 
 const findClosestAllowedIndex = ctx => {
