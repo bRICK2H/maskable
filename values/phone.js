@@ -5,11 +5,12 @@ const parseValue = (ctx, value) => {
 	const {
 		mask, char
 	} = ctx
+	, firstNumbers = ['7', '8']
 
 	value = value.replace(/\+7|\D/g, '')
 
 	if (value.length >= 11) {
-		value = value[0] === '8'
+		value = firstNumbers.includes(value[0])
 			? value.slice(1)
 			: value.slice(0, -1)
 	}
