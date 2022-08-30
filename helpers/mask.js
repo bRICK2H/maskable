@@ -38,6 +38,7 @@ export default (ctx, value) => {
 				start,
 			} = select
 
+			let arrayResult = null
 			const modifyPrevValue = prevValue
 				.split('')
 				.map((curr, i) => {
@@ -47,26 +48,29 @@ export default (ctx, value) => {
 
 			if (!backspace && !del) {
 				if (!isNumber(value[start])) {
-					Object.assign(arrayValue, prevValue.split(''))
+					arrayResult = prevValue.split('')
 				} else {
 					modifyPrevValue.splice(start, 1, value[start])
-					Object.assign(arrayValue, modifyPrevValue)
+					arrayResult = modifyPrevValue
 				}
+			} else {
+				arrayResult = modifyPrevValue
 			}
-			
+
+			Object.assign(arrayValue, arrayResult)
 		} else {
 			const validIndex = allowedCharIndices(char, mask)
 				.findIndex(n => n === start)
 
 			if (backspace || del) {
 				ctx._validCounter = 0
-	
+
 				isNumber(prevValue[start])
 					? arrayValue.splice(start, 0, char)
 					: arrayValue.splice(start, 0, prevValue[start])
 			} else {
 				ctx._validCounter = validIndex !== -1 || start >= max ? 0 : 1
-	
+
 				if (!isNumber(arrayValue[start - 1])) {
 					arrayValue.splice(start - 1, 1, ...arrayValue.splice(start, 1))
 				} else {
@@ -74,14 +78,14 @@ export default (ctx, value) => {
 						arrayValue.splice(start, 1)
 					} else {
 						const [s] = h.findNextAllowedIndex(ctx, true)
-	
+
 						arrayValue.splice(s, 1, ...arrayValue.splice(start - 1, 1))
 					}
 				}
 			}
 		}
-		
-		
+
+
 		return mask.split('')
 			.map((curr, i) => isNumber(arrayValue[i]) ? arrayValue[i] : curr)
 			.join('')
